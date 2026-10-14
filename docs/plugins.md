@@ -109,6 +109,10 @@ Minimal `hypr` example (the POC fixture):
 - **Key**: `plugins.<id>.enabled` by default. A plugin that already has its own
   master switch declares it in `toggle` (Nyx → `mascots.enabled`), so the
   plugin card never duplicates an existing switch.
+- **Config menu**: `plugins.<id>.config` (bool, default `true`) — whether the
+  plugin's settings page appears in the Plugins group. The manager card shows
+  both switches; the master switch hides the page regardless, so everything
+  the plugin owns follows it.
 - **Written by**: the shell Plugins page and `dots plugins enable|disable <id>`
   — atomically, following the existing `settings.json` contract. Plugins never
   write their own enable state.
@@ -138,6 +142,7 @@ prints a JSON array sorted by `name`:
     "type": "shell",
     "toggle": "mascots.enabled",
     "enabled": false,
+    "config": true,
     "settings": { "page": "settings/NyxPage.qml", "label": "Nyx" },
     "_base": "/home/user/.config/hypr/plugins/nyx"
   }
@@ -191,10 +196,10 @@ shell wires it dynamically:
   `ui/plugins/<id>/` (the Nyx precedent, generalized from the old `ui/nyx`);
   the runtime subset (`plugin.json`, `hypr.lua`, `scripts/`) also lands in the
   registry (see §1).
-- **Nav**: `EditorNav.withPlugins()` appends one item per installed plugin
-  with a settings page to the Plugins group — id `p_<id>`, `label`/`icon`
-  from the manifest — hideable and orderable through `settings.editor` like
-  any other item.
+- **Nav**: `EditorNav.withPlugins()` appends one item per plugin with a
+  settings page — id `p_<id>`, `label`/`icon` from the manifest — but only
+  while the plugin is enabled and its config menu is on (§3); the item stays
+  hideable/orderable through `settings.editor` like any other.
 - **Load**: the editor loads the page on demand
   (`ui/plugins/<id>/<settings.page>`) with the same contract as its own
   pages: the QML root receives the editor as an initial property
