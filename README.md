@@ -1,9 +1,7 @@
 # equisdots · plugins
 
 Plugin standard and the concentration folder for every equisdots plugin —
-converted from the stack, samples, or third-party contributions. The
-project's architecture, decisions and status live in
-[equisdots/plugin-system](https://github.com/equisdots/plugin-system).
+converted from the stack, samples, or third-party contributions.
 
 | Path | What |
 |---|---|
