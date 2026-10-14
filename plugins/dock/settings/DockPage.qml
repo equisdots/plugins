@@ -3,9 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
-import "../../../bar/edit"
-import "../../../bar"
-import "../../../../core"
+import qs.ui.bar.edit
+import qs.ui.bar
+import qs.core
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DockPage — the Dock plugin's own settings page (equisdots plugin standard).
