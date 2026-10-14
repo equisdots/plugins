@@ -1,14 +1,14 @@
 # equisdots · plugins
 
-Plugin standard, sample, template and the workshop where equisdots stack
-features get converted into plugins.
+Plugin standard and the concentration folder for every equisdots plugin —
+converted from the stack, samples, or third-party contributions.
 
 | Path | What |
 |---|---|
 | `docs/plugins.md` | **Plugin standard** — manifest, folders, enablement, scan + loader + CLI contracts |
-| `samples/hello/` | POC fixture: a minimal `hypr` plugin (one keybind) |
-| `template/` | Copy this to start a new plugin |
-| `converted/` | Features extracted from the stack become plugins here (screenshots is first) |
+| `docs/conversion.md` | Conversion roadmap: which stack features become plugins, and their status |
+| `docs/nyx.md` | Review: completing Nyx's conversion and its extensibility through the plugin system |
+| `plugins/` | **Every plugin lives here** — one folder per plugin, folder name = `plugin.json → id`, any origin; `_template/` is the scaffold |
 
 ## How it works (v0)
 
@@ -29,7 +29,7 @@ Try the sample:
 
 ```sh
 mkdir -p ~/.config/hypr/plugins-user
-cp -r samples/hello ~/.config/hypr/plugins-user/
+cp -r plugins/hello ~/.config/hypr/plugins-user/
 # Settings → Plugins → enable "Hello Plugin", then press SUPER + SHIFT + H
 ```
 

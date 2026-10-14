@@ -1,6 +1,6 @@
 // ScreenshotOverlay — the screenshots plugin's area-selection / recording UI.
 //
-// Ships in the plugin repo (equisdots/plugins → converted/screenshots) and is
+// Ships in the plugin repo (equisdots/plugins → plugins/screenshots) and is
 // deployed with the plugin UI to <quickshell>/ui/plugins/screenshots/ui/ —
 // the relative imports below reach the shell's bar kit and core singletons
 // from that deployed path.

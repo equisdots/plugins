@@ -260,8 +260,9 @@ live-session checks run on real hardware):
    `p_<id>`, from `plugin.json → settings.page`).
 4. Naming: `plugins/` + `plugin.json` + "Plugins" group — confirm, or rename
    (extensions? modules?).
-5. ~~Fixture home~~ — **decided**: `samples/` in this repo; converted plugins
-   live in `converted/` while being extracted.
+5. ~~Fixture home~~ — **decided**: every plugin concentrates in this repo's
+   `plugins/` folder (one folder per plugin, any origin); `_template/` is the
+   scaffold; external plugins keep their own repos and are referenced.
 6. **Plugin UI kit**: v0.1 pages import the shell's editor kit by deployed
    relative path (`../../../bar/edit`, `../../../../core`). Options for v0.2:
    a stable public kit directory (`ui/sdk/`) vs. an injected host API (no
