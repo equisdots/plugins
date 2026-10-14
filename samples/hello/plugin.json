@@ -1,0 +1,9 @@
+{
+  "id": "hello",
+  "name": "Hello Plugin",
+  "version": "0.0.1",
+  "author": "equisdots",
+  "description": "POC fixture: a keybind that greets",
+  "type": "hypr",
+  "compat": { "hyprland": ">=0.55" }
+}
