@@ -65,6 +65,8 @@ keys:
 - Type-shadowing caveat: plugin pages load with **relative** sources;
   `file://` loading changes unqualified type resolution (QtQuick.Controls
   exports a `Config` that would shadow the core singleton).
+- The hub does not carry Nyx's code: `registry.json` references it
+  (id → source, install-time). No copies, no drift.
 
 ## Open points
 

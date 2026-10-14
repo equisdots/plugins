@@ -222,6 +222,29 @@ Deploy in v0: Nyx's UI rsyncs to `ui/plugins/nyx/` and its manifest to
 `doctor`) is F1; the POC fixture installs by simply copying its folder into
 `plugins-user/hello/` — proving user plugins need zero `dots` changes.
 
+### Registry (install-time index)
+
+`registry.json` (repo root) lists every known plugin and where it comes from —
+this repo, `equisdots/nyx`, or any external repo. The runtime never reads it
+(installed plugins are discovered by folder scan, §4); it is the **install-time
+source list** for `dots plugins add <id>` (F1) and the seed of a future store
+view (available vs. installed).
+
+| Field | Req | Notes |
+|---|---|---|
+| `version` | yes | registry schema version (currently `1`) |
+| `plugins[].id` | yes | must match the plugin's `plugin.json → id` |
+| `plugins[].source` | yes | `owner/repo` |
+| `plugins[].path` | no | subdirectory when one repo hosts several plugins; absent = the repo root is the plugin |
+| `plugins[].name` / `.author` / `.description` | no | display hints for listings (the manifest stays the source of truth) |
+
+```json
+{ "version": 1, "plugins": [
+  { "id": "nyx", "source": "equisdots/nyx" },
+  { "id": "screenshots", "source": "equisdots/plugins", "path": "plugins/screenshots" }
+] }
+```
+
 ---
 
 ## 8. POC acceptance criteria

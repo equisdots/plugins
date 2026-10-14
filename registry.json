@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "nyx",
+      "name": "Nyx",
+      "author": "xscriptor",
+      "description": "Mascot island and control-center notch for the shell",
+      "source": "equisdots/nyx"
+    },
+    {
+      "id": "screenshots",
+      "name": "Screenshots & Recording",
+      "author": "equisdots",
+      "description": "Screenshots (area/full/edit) and screen recording with virtual audio",
+      "source": "equisdots/plugins",
+      "path": "plugins/screenshots"
+    },
+    {
+      "id": "hello",
+      "name": "Hello Plugin",
+      "author": "equisdots",
+      "description": "POC fixture: a keybind that greets",
+      "source": "equisdots/plugins",
+      "path": "plugins/hello"
+    }
+  ]
+}
