@@ -8,6 +8,7 @@ converted from the stack, samples, or third-party contributions.
 | `docs/plugins.md` | **Plugin standard** — manifest, folders, enablement, scan + loader + CLI contracts |
 | `docs/conversion.md` | Conversion roadmap: which stack features become plugins, and their status |
 | `docs/nyx.md` | Review: completing Nyx's conversion and its extensibility through the plugin system |
+| `docs/testing.md` | How to deploy the experimental branches on a live session (checklist + rollback) |
 | `plugins/` | **Every plugin lives here** — one folder per plugin, folder name = `plugin.json → id`, any origin; `_template/` is the scaffold |
 | `registry.json` | Install-time index: every known plugin and its source repo (for `dots plugins add`, future store) |
 
