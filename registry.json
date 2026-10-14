@@ -31,6 +31,14 @@
       "description": "Configurable application dock with live dimensions, colors and automatic palette following",
       "source": "equisdots/plugins",
       "path": "plugins/dock"
+    },
+    {
+      "id": "sysmon",
+      "name": "Sysmon",
+      "author": "xscriptor",
+      "description": "Floating system monitor (CPU / RAM / temperature) with live bars",
+      "source": "equisdots/plugins",
+      "path": "plugins/sysmon"
     }
   ]
 }
