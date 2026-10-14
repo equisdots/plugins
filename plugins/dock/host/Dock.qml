@@ -206,222 +206,123 @@ Item {
         else if (action === "settings") root.openSettings();
     }
 
-    // ── dock surfaces: one full-screen overlay + panel per screen ──────────
-    Variants {
-        model: Quickshell.screens
+    // ── surfaces (declared to the SDK manager) ─────────────────────────────
+    readonly property var surfaces: [
+        { id: "dock", kind: "overlay", screen: "all", content: dockContent },
+        { id: "reserve", kind: "reserve", screen: "all", edge: root.position, reserve: true,
+          visible: root.reserve && root.apps.length > 0, reserveThickness: root.surfaceThickness }
+    ]
 
-        delegate: Component {
-            PanelWindow {
-                id: win
-                required property var modelData
-                screen: modelData
+    Component {
+        id: dockContent
+        Item {
+            id: dockRoot
+            property var qsScreen: null
+            readonly property var maskItem: panel          // input region = the panel
+            Rectangle {
+                id: panel
+                x: {
+                    let sw = parent ? parent.width : 1920;
+                    if (root.position === "left") return root.margin;
+                    if (root.position === "right") return Math.round(sw - root.margin - width);
+                    return Math.round((sw - width) / 2);
+                }
+                y: {
+                    let sh = parent ? parent.height : 1080;
+                    if (root.position === "top") return root.margin;
+                    if (root.position === "bottom") return Math.round(sh - root.margin - height);
+                    return Math.round((sh - height) / 2);
+                }
+                width: root.vertical ? root.thickness : (icons.implicitWidth + root.padding * 2)
+                height: root.vertical ? (icons.implicitHeight + root.padding * 2) : root.thickness
+                radius: root.radius
+                color: root.panelColor
+                border.width: root.borderOn ? 1 : 0
+                border.color: root.borderColor
 
-                visible: true
-                color: "transparent"
-                exclusionMode: ExclusionMode.Ignore
-                implicitWidth: win.screen ? win.screen.width : 1920
-                implicitHeight: win.screen ? win.screen.height : 1080
-                anchors.left: true
-                anchors.right: true
-                anchors.top: true
-                anchors.bottom: true
-                WlrLayershell.namespace: "equisdots-dock"
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: root.openContextMenu(dockRoot.qsScreen, null)
+                }
 
-                // Input only over the panel; everything else is click-through.
-                mask: Region { item: panel }
+                Grid {
+                    id: icons
+                    anchors.centerIn: parent
+                    columns: root.vertical ? 1 : Math.max(1, root.apps.length)
+                    rowSpacing: root.spacing
+                    columnSpacing: root.spacing
 
-                Rectangle {
-                    id: panel
-                    // Explicit x/y from the screen size (numbers, not anchors).
-                    x: {
-                        let sw = win.screen ? win.screen.width : 1920;
-                        if (root.position === "left") return root.margin;
-                        if (root.position === "right") return Math.round(sw - root.margin - width);
-                        return Math.round((sw - width) / 2);
-                    }
-                    y: {
-                        let sh = win.screen ? win.screen.height : 1080;
-                        if (root.position === "top") return root.margin;
-                        if (root.position === "bottom") return Math.round(sh - root.margin - height);
-                        return Math.round((sh - height) / 2);
-                    }
+                    Repeater {
+                        model: root.apps
+                        delegate: Item {
+                            id: cell
+                            required property var modelData
+                            required property int index
 
-                    width: root.vertical ? root.thickness : (icons.implicitWidth + root.padding * 2)
-                    height: root.vertical ? (icons.implicitHeight + root.padding * 2) : root.thickness
-                    radius: root.radius
-                    color: root.panelColor
-                    border.width: root.borderOn ? 1 : 0
-                    border.color: root.borderColor
+                            readonly property real labelW: root.showLabels
+                                ? Math.min(label.implicitWidth, root.iconSize * 2.4) : 0
+                            width: Math.max(root.iconSize, labelW)
+                            height: root.iconSize + (root.showLabels ? label.implicitHeight + 4 : 0)
 
-                    MouseArea {
-                        anchors.fill: parent
-                        acceptedButtons: Qt.RightButton
-                        onClicked: root.openContextMenu(win.screen, null)
-                    }
+                            Rectangle {
+                                id: chip
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.top: parent.top
+                                width: root.iconSize
+                                height: root.iconSize
+                                radius: Math.round(root.iconSize * 0.28)
+                                color: ma.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
+                                Behavior on color { ColorAnimation { duration: 120 } }
 
-                    Grid {
-                        id: icons
-                        anchors.centerIn: parent
-                        columns: root.vertical ? 1 : Math.max(1, root.apps.length)
-                        rowSpacing: root.spacing
-                        columnSpacing: root.spacing
-
-                        Repeater {
-                            model: root.apps
-                            delegate: Item {
-                                id: cell
-                                required property var modelData
-                                required property int index
-
-                                readonly property real labelW: root.showLabels
-                                    ? Math.min(label.implicitWidth, root.iconSize * 2.4) : 0
-                                width: Math.max(root.iconSize, labelW)
-                                height: root.iconSize + (root.showLabels ? label.implicitHeight + 4 : 0)
-
-                                Rectangle {
-                                    id: chip
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.top: parent.top
-                                    width: root.iconSize
-                                    height: root.iconSize
-                                    radius: Math.round(root.iconSize * 0.28)
-                                    color: ma.containsMouse ? Qt.rgba(1, 1, 1, 0.10) : "transparent"
-                                    Behavior on color { ColorAnimation { duration: 120 } }
-
-                                    Image {
-                                        anchors.centerIn: parent
-                                        width: Math.round(root.iconSize * 0.62)
-                                        height: width
-                                        source: root.iconSource(cell.modelData)
-                                        sourceSize: Qt.size(root.iconSize, root.iconSize)
-                                        fillMode: Image.PreserveAspectFit
-                                        smooth: true
-                                        asynchronous: true
-                                    }
+                                Image {
+                                    anchors.centerIn: parent
+                                    width: Math.round(root.iconSize * 0.62)
+                                    height: width
+                                    source: root.iconSource(cell.modelData)
+                                    sourceSize: Qt.size(root.iconSize, root.iconSize)
+                                    fillMode: Image.PreserveAspectFit
+                                    smooth: true
+                                    asynchronous: true
                                 }
+                            }
 
-                                Text {
-                                    id: label
-                                    visible: root.showLabels
-                                    anchors.top: chip.bottom
-                                    anchors.topMargin: 2
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    width: cell.width
-                                    horizontalAlignment: Text.AlignHCenter
-                                    text: String((cell.modelData && cell.modelData.label) || "")
-                                    font.family: "Hack Nerd Font"
-                                    font.pixelSize: Math.max(9, Math.round(root.iconSize * 0.22))
-                                    color: c.text
-                                    maximumLineCount: 1
-                                    elide: Text.ElideRight
-                                }
+                            Text {
+                                id: label
+                                visible: root.showLabels
+                                anchors.top: chip.bottom
+                                anchors.topMargin: 2
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: cell.width
+                                horizontalAlignment: Text.AlignHCenter
+                                text: String((cell.modelData && cell.modelData.label) || "")
+                                font.family: "Hack Nerd Font"
+                                font.pixelSize: Math.max(9, Math.round(root.iconSize * 0.22))
+                                color: c.text
+                                maximumLineCount: 1
+                                elide: Text.ElideRight
+                            }
 
-                                scale: (root.magnify && ma.containsMouse) ? root.magnifyScale : 1.0
-                                z: ma.containsMouse ? 1 : 0
-                                Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack } }
+                            scale: (root.magnify && ma.containsMouse) ? root.magnifyScale : 1.0
+                            z: ma.containsMouse ? 1 : 0
+                            Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutBack } }
 
-                                MouseArea {
-                                    id: ma
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    cursorShape: Qt.PointingHandCursor
-                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                    onClicked: (mouse) => {
-                                        if (mouse.button === Qt.RightButton)
-                                            root.openContextMenu(win.screen, cell.modelData);
-                                        else
-                                            root.launch(cell.modelData);
-                                    }
+                            MouseArea {
+                                id: ma
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                onClicked: (mouse) => {
+                                    if (mouse.button === Qt.RightButton)
+                                        root.openContextMenu(dockRoot.qsScreen, cell.modelData);
+                                    else
+                                        root.launch(cell.modelData);
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-
-    // ── reservation strips: reserve the dock's edge for windows ────────────
-    // The dock is a full-screen overlay (so its edge can change without
-    // re-anchoring a surface); reserving space needs an edge-anchored surface
-    // with exclusiveZone, so one static strip per edge is declared and only
-    // the active one is mapped. No content, empty input region (click-through).
-    // NOTE: do not set exclusionMode explicitly — exclusiveZone already
-    // implies Normal, and an explicit exclusionMode:Normal suppressed the
-    // reservation here.
-    Variants {
-        model: Quickshell.screens
-        delegate: Component {
-            PanelWindow {
-                required property var modelData
-                screen: modelData
-                visible: root.reserve && root.position === "bottom" && root.apps.length > 0
-                color: "transparent"
-                exclusiveZone: root.surfaceThickness
-                implicitWidth: modelData ? modelData.width : 1920
-                implicitHeight: root.surfaceThickness
-                anchors.left: true
-                anchors.right: true
-                anchors.bottom: true
-                WlrLayershell.namespace: "equisdots-dock-reserve"
-                mask: Region { }
-            }
-        }
-    }
-    Variants {
-        model: Quickshell.screens
-        delegate: Component {
-            PanelWindow {
-                required property var modelData
-                screen: modelData
-                visible: root.reserve && root.position === "top" && root.apps.length > 0
-                color: "transparent"
-                exclusiveZone: root.surfaceThickness
-                implicitWidth: modelData ? modelData.width : 1920
-                implicitHeight: root.surfaceThickness
-                anchors.left: true
-                anchors.right: true
-                anchors.top: true
-                WlrLayershell.namespace: "equisdots-dock-reserve"
-                mask: Region { }
-            }
-        }
-    }
-    Variants {
-        model: Quickshell.screens
-        delegate: Component {
-            PanelWindow {
-                required property var modelData
-                screen: modelData
-                visible: root.reserve && root.position === "left" && root.apps.length > 0
-                color: "transparent"
-                exclusiveZone: root.surfaceThickness
-                implicitWidth: root.surfaceThickness
-                implicitHeight: modelData ? modelData.height : 1080
-                anchors.top: true
-                anchors.bottom: true
-                anchors.left: true
-                WlrLayershell.namespace: "equisdots-dock-reserve"
-                mask: Region { }
-            }
-        }
-    }
-    Variants {
-        model: Quickshell.screens
-        delegate: Component {
-            PanelWindow {
-                required property var modelData
-                screen: modelData
-                visible: root.reserve && root.position === "right" && root.apps.length > 0
-                color: "transparent"
-                exclusiveZone: root.surfaceThickness
-                implicitWidth: root.surfaceThickness
-                implicitHeight: modelData ? modelData.height : 1080
-                anchors.top: true
-                anchors.bottom: true
-                anchors.right: true
-                WlrLayershell.namespace: "equisdots-dock-reserve"
-                mask: Region { }
             }
         }
     }
