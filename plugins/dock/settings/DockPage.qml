@@ -45,6 +45,9 @@ Item {
     property var dApps: []
 
     readonly property var cfg: {
+        // Prefer the injected SDK handle; fall back to the Config façade until
+        // it arrives (the page is created before `host` is injected).
+        if (root.host && root.host.settings) return root.host.settings.section;
         Config.rev;
         let d = Config.rawSettings ? Config.rawSettings.dock : null;
         return (d && typeof d === "object") ? d : ({});
@@ -72,6 +75,7 @@ Item {
         root.dApps = Array.isArray(d.apps) ? d.apps.map(function (a) { return a; }) : [];
     }
     Component.onCompleted: root.syncFromConfig()
+    onHostChanged: if (root.host) root.syncFromConfig()
 
     // ── commit into settings.json → dock (immediate: live while editing) ─────
     property var _pending: ({})
@@ -83,9 +87,13 @@ Item {
     function flush() {
         let keys = Object.keys(root._pending);
         if (keys.length === 0) return;
-        let base = (Config.rawSettings.dock && typeof Config.rawSettings.dock === "object")
-                   ? Config.rawSettings.dock : {};
-        Config.setSetting("dock", Object.assign({}, base, root._pending));
+        if (root.host && root.host.settings) {
+            root.host.settings.setMany(root._pending);
+        } else {
+            let base = (Config.rawSettings.dock && typeof Config.rawSettings.dock === "object")
+                       ? Config.rawSettings.dock : {};
+            Config.setSetting("dock", Object.assign({}, base, root._pending));
+        }
         root._pending = {};
     }
     Component.onDestruction: root.flush()
