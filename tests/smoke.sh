@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+# smoke.sh — static integration smoke test for an equisdots plugin.
+#
+# Usage:
+#   tests/smoke.sh <plugin-dir>          # e.g. plugins/dock  or  a deployed dir
+#   tests/smoke.sh                       # every plugins/*/ with a plugin.json
+#
+# Checks (deterministic, no compositor needed):
+#   01 manifest parses + required fields + id == folder name
+#   02 every directory import has a qmldir (the "X is not a type" trap)
+#   03 plugins_scan.sh resolves enabled/config/compat for a fixture settings
+#   04 lints: qmllint (*.qml), luac -p (*.lua), bash -n (*.sh), node --check (*.js)
+#
+# Exit: 0 pass, 1 failure, 2 environment missing (infra, not product).
+set -uo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGINS_REPO="$(cd "$HERE/.." && pwd)"
+fail=0
+say()  { printf '%s\n' "$*"; }
+bad()  { printf '\033[31mFAIL\033[0m %s\n' "$*"; fail=1; }
+good() { printf '\033[32m ok \033[0m %s\n' "$*"; }
+
+for c in jq qmllint; do command -v "$c" >/dev/null 2>&1 || { echo "SKIP: $c missing"; exit 2; }; done
+
+check_manifest() {
+    local d="$1" m="$d/plugin.json"
+    [ -f "$m" ] || { bad "$d: no plugin.json"; return; }
+    jq -e . "$m" >/dev/null 2>&1 || { bad "$d: invalid JSON"; return; }
+    for k in id name version author description type; do
+        jq -e "has(\"$k\") and (.[\"$k\"]|tostring|length>0)" "$m" >/dev/null || bad "$d: missing field '$k'"
+    done
+    local id; id="$(jq -r '.id' "$m")"
+    [ "$(basename "$d")" = "$id" ] || bad "$d: id '$id' != folder '$(basename "$d")'"
+    good "manifest: $id"
+}
+
+check_qmldir() {
+    local d="$1"
+    local miss=0 f fdir rel target
+    while IFS= read -r f; do
+        fdir="$(dirname "$f")"
+        while IFS= read -r rel; do
+            case "$rel" in .*) ;; *) continue ;; esac
+            target="$(cd "$fdir" && cd "$rel" 2>/dev/null && pwd)" || continue
+            [ -d "$target" ] || continue
+            if [ ! -f "$target/qmldir" ]; then
+                bad "$f: import \"$rel\" -> $target has no qmldir"
+                miss=1
+            fi
+        done < <(grep -oE 'import[[:space:]]+"[^"]+"' "$f" | sed -E 's/import[[:space:]]+"([^"]+)"/\1/')
+    done < <(find "$d" -name '*.qml')
+    [ "$miss" = 0 ] && good "qmldir: all directory imports declared"
+}
+
+check_scan() {
+    local d="$1" id; id="$(jq -r '.id' "$d/plugin.json")"
+    local scan="$HERE/../.."
+    # find the shell scan in a sibling repo (dev layout) or skip
+    local sc=""
+    for cand in "$PLUGINS_REPO/../shell/core/scripts/plugins_scan.sh"; do
+        [ -f "$cand" ] && sc="$cand"
+    done
+    if [ -z "$sc" ]; then say "skip: scan not found"; return; fi
+    local tmp; tmp="$(mktemp -d)"
+    mkdir -p "$tmp/managed" "$tmp/user"
+    cp -r "$d" "$tmp/managed/$id"
+    printf '{}' > "$tmp/settings.json"
+    local out
+    out="$(PLUGINS_MANAGED="$tmp/managed" PLUGINS_USER="$tmp/user" PLUGINS_SETTINGS="$tmp/settings.json" bash "$sc" 2>/dev/null)"
+    rm -rf "$tmp"
+    local found; found="$(jq -r --arg id "$id" '.[]|select(.id==$id)|.id' <<<"$out")"
+    [ "$found" = "$id" ] && good "scan: $id resolved" || bad "scan: $id not resolved"
+}
+
+check_lints() {
+    local d="$1" ok=1
+    while IFS= read -r f; do
+        qmllint "$f" >/dev/null 2>&1 || { bad "qmllint: $f"; ok=0; }
+    done < <(find "$d" -name '*.qml')
+    if command -v luac >/dev/null 2>&1; then
+        while IFS= read -r f; do luac -p "$f" >/dev/null 2>&1 || { bad "luac: $f"; ok=0; }; done < <(find "$d" -name '*.lua')
+    fi
+    while IFS= read -r f; do bash -n "$f" >/dev/null 2>&1 || { bad "bash -n: $f"; ok=0; }; done < <(find "$d" -name '*.sh')
+    if command -v node >/dev/null 2>&1; then
+        while IFS= read -r f; do node --check "$f" >/dev/null 2>&1 || { bad "node --check: $f"; ok=0; }; done < <(find "$d" -name '*.js')
+    fi
+    [ "$ok" = 1 ] && good "lints clean"
+}
+
+run_one() {
+    local d="$1"
+    say "── $d"
+    check_manifest "$d"
+    check_qmldir "$d"
+    check_scan "$d"
+    check_lints "$d"
+}
+
+if [ "$#" -ge 1 ]; then
+    run_one "$1"
+else
+    for d in "$PLUGINS_REPO"/plugins/*/; do
+        case "$(basename "$d")" in _*) continue ;; esac
+        [ -f "$d/plugin.json" ] && run_one "${d%/}"
+    done
+fi
+
+[ "$fail" = 0 ] && say "SMOKE: OK" || say "SMOKE: FAILURES"
+exit "$fail"

@@ -301,3 +301,33 @@ live-session checks run on real hardware):
    relative path (`../../../bar/edit`, `../../../../core`). Options for v0.2:
    a stable public kit directory (`ui/sdk/`) vs. an injected host API (no
    imports — the Nyx overlay philosophy applied to settings pages).
+
+---
+
+## v1 changes (`branch/experimental`)
+
+The plugin *interface* moved out of this repo into two dedicated repositories:
+
+- **`equisdots/plugin-api`** — the normative contract: `plugin.json` schema,
+  the host API version (`plugin-api.json`), the compat/versioning spec, and the
+  bash + Lua semver evaluators (drift-guarded by shared vectors).
+- **`equisdots/plugin-sdk`** — the runtime kit: the injected `PluginHost` handle,
+  the reactive `Settings`/`SettingsScope` store, the surface manager (planned),
+  and the compositor-side Lua `mod` SDK.
+
+Changes to the standard:
+
+1. **Injected host handle.** Plugins no longer import shell internals by relative
+   path. A plugin root opts in with `property var host` and receives a
+   `PluginHost` (colors, settings, exec, paths, logging, catalog). The shell
+   injects it in `ui/PluginHosts.qml` (host adapters) and `BarEditor` (pages)
+   via `HostApi.forPlugin(entry)`.
+2. **`scope`.** `plugin.json` gains an optional `scope` (default `plugins.<id>`)
+   naming the plugin's settings namespace. Dock declares `"scope": "dock"`.
+3. **`compat` is enforced.** `plugins_scan.sh` annotates each plugin with a
+   verdict `{state, ok, reason, requires, seen}`; hosts refuse to mount when
+   `ok === false`; the manager badges incompatible plugins.
+4. **`api.requires`** (optional): the capability set a plugin requests.
+5. **Reactive settings.** The shell's `Config` is now a façade over the SDK
+   `Settings` store (copy-on-write, state-before-notify): the one-edit lag and
+   the async-initial-load gap are fixed at the source, not per consumer.

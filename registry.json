@@ -23,6 +23,14 @@
       "description": "POC fixture: a keybind that greets",
       "source": "equisdots/plugins",
       "path": "plugins/hello"
+    },
+    {
+      "id": "dock",
+      "name": "Dock",
+      "author": "xscriptor",
+      "description": "Configurable application dock with live dimensions, colors and automatic palette following",
+      "source": "equisdots/plugins",
+      "path": "plugins/dock"
     }
   ]
 }
