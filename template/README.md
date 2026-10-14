@@ -14,4 +14,9 @@
    # enable in Settings → Plugins, then reload: hyprctl reload
    ```
 
+5. Optional — your own settings menu: declare
+   `"settings": { "page": "settings/Page.qml", "label": "My Plugin" }` in
+   `plugin.json` and ship `settings/Page.qml` (a root `Item` with
+   `property var bar`). It appears under Plugins with a Configure button.
+
 The full contract is in `docs/plugins.md` (standard v0).

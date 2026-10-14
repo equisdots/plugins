@@ -1,8 +1,9 @@
 # equisdots · Plugins — Standard v0
 
 > **Status: draft — POC implemented** (2026-10, `branch/experimental`). Nyx is
-> plugin #1; the shell ships the Plugins group (manager + per-plugin pages),
-> the Hyprland config runs the loader and `dots` has the `plugins` command.
+> plugin #1 and ships its **own settings page** (self-contained plugin UI);
+> the shell ships the Plugins group (manager + dynamic plugin pages), the
+> Hyprland config runs the loader and `dots` has the `plugins` command.
 > Scope: the Hyprland stack (`dots`, `hyprland`, `shell`, `nyx`, `plugins`).
 > niri is explicitly out of scope for this document.
 
@@ -25,9 +26,9 @@ Three states, deliberately separated:
 
 | State | Meaning | v0? |
 |---|---|---|
-| Installed | a manifest exists in a registry folder | ✅ yes |
-| Enabled | its switch in `settings.json` is true | ✅ yes |
-| Available | known in a registry/store, not installed | ❌ later phase |
+| Installed | a manifest exists in a registry folder | yes |
+| Enabled | its switch in `settings.json` is true | yes |
+| Available | known in a registry/store, not installed | later phase |
 
 ---
 
@@ -43,12 +44,12 @@ scanned first, so a user plugin with the same `id` shadows the managed one
 (same rule as Nyx species/cards).
 
 The registry folder holds the **manifest**; payload lives wherever the plugin
-needs it. A `hypr` plugin keeps its `hypr.lua` next to its manifest; a shell
-plugin's QML stays deployed by its own install path (e.g. Nyx keeps its QML at
-`ui/nyx/` — only its manifest lands in the registry).
+needs it. A `hypr` plugin keeps its `hypr.lua` next to its manifest; the UI of
+a `shell`/`mixed` plugin deploys into the shell tree at `ui/plugins/<id>/`
+(the old `ui/nyx` Nyx path, generalized).
 
-`plugins/` is the **installed registry**, not necessarily where the code
-lives. This keeps discovery cheap and unambiguous.
+`plugins/` is the **installed registry**; the shell-tree copy is what the
+shell loads. This keeps discovery cheap and unambiguous.
 
 ---
 
@@ -64,21 +65,22 @@ lives. This keeps discovery cheap and unambiguous.
   "type": "shell",
   "compat": { "shell": ">=0.1.0" },
   "toggle": "mascots.enabled",
-  "settingsTab": "mascots"
+  "settings": { "page": "settings/NyxPage.qml", "label": "Nyx" }
 }
 ```
 
 | Field | Required | Type | Notes |
 |---|---|---|---|
-| `id` | ✅ | slug | stable; used in settings keys, folder names and the CLI |
-| `name` | ✅ | string | display name |
-| `version` | ✅ | semver | `"0.1.0"` |
-| `author` | ✅ | string | `"equisdots"` or a user handle |
-| `description` | ✅ | string | one line, shown on the plugin card |
-| `type` | ✅ | `shell` \| `hypr` \| `mixed` \| `cli` | badge + payload expectations |
+| `id` | yes | slug | stable; used in settings keys, folder names and the CLI |
+| `name` | yes | string | display name |
+| `version` | yes | semver | `"0.1.0"` |
+| `author` | yes | string | `"equisdots"` or a user handle |
+| `description` | yes | string | one line, shown on the plugin card |
+| `type` | yes | `shell` \| `hypr` \| `mixed` \| `cli` | badge + payload expectations |
 | `compat` | — | object | `{ "hyprland": ">=0.55", "shell": ">=0.1.0" }` — informational in v0, enforced by `dots doctor` in F1 |
 | `toggle` | — | settings path | where the enable switch lives; default: `plugins.<id>.enabled` |
-| `settingsTab` | — | string | id of an existing shell settings tab — renders the "Configure" button on the card |
+| `settings` | — | object | the plugin ships its own settings page: `{ page, label?, icon? }`. `page` is a QML file in the repo, deployed with the UI to `ui/plugins/<id>/`; it appears in the Plugins group as `p_<id>` and Configure opens it (see §6) |
+| `settingsTab` | — | string | legacy: id of an existing shell settings tab (pre `settings.page`) |
 | `defaultEnabled` | — | bool (default `false`) | effective state when no switch exists in `settings.json` yet |
 
 Minimal `hypr` example (the POC fixture):
@@ -131,7 +133,7 @@ prints a JSON array sorted by `name`:
     "type": "shell",
     "toggle": "mascots.enabled",
     "enabled": false,
-    "settingsTab": "mascots",
+    "settings": { "page": "settings/NyxPage.qml", "label": "Nyx" },
     "_base": "/home/user/.config/hypr/plugins/nyx"
   }
 ]
@@ -172,21 +174,45 @@ mod.bind("SUPER + SHIFT + H", hl.dsp.exec_cmd("notify-send 'Hello from a plugin'
 
 ---
 
-## 6. `dots` CLI (v0 minimum)
+## 6. Plugin settings pages (own config menu)
+
+A plugin that declares `settings.page` ships **its own configuration UI**; the
+shell wires it dynamically:
+
+- **Deploy**: `dots` copies the plugin UI into the shell tree at
+  `ui/plugins/<id>/` (the Nyx precedent, generalized from the old `ui/nyx`).
+- **Nav**: `EditorNav.withPlugins()` appends one item per installed plugin
+  with a settings page to the Plugins group — id `p_<id>`, `label`/`icon`
+  from the manifest — hideable and orderable through `settings.editor` like
+  any other item.
+- **Load**: the editor loads the page on demand
+  (`ui/plugins/<id>/<settings.page>`) with the same contract as its own
+  pages: the QML root receives the editor as an initial property
+  (`property var bar`) — `bar.s()`, `bar.colors`, `bar.gotoPage()`.
+- **Kit imports**: at the deployed path, the shell's shared editor kit and
+  core singletons resolve as `../../../bar/edit` and `../../../../core`.
+  Treat those as a documented v0.1 contract; a public kit path or an injected
+  host API is a v0.2 item (open question §10.6).
+- Nyx is the first adopter: `settings/NyxPage.qml` — the whole mascot/island
+  menu moved into the plugin repo; the shell no longer owns that page.
+
+---
+
+## 7. `dots` CLI (v0 minimum)
 
 - `dots plugins` — table of installed plugins from the scan: id, name, version,
   type, enabled.
-- `dots plugins enable|disable <id>` — writes the effective toggle and calls
-  `reload.sh`.
+- `dots plugins enable|disable <id>` — writes the effective toggle and
+  reloads Hyprland (`hyprctl reload`).
 
-Deploy in v0: Nyx's manifest is placed in `~/.config/hypr/plugins/nyx/` by its
-existing deploy step (one line). **Manifest-driven deploy** (`add`/`remove`/
+Deploy in v0: Nyx's UI rsyncs to `ui/plugins/nyx/` and its manifest to
+`~/.config/hypr/plugins/nyx/` (its existing deploy step). **Manifest-driven deploy** (`add`/`remove`/
 `doctor`) is F1; the POC fixture installs by simply copying its folder into
 `plugins-user/hello/` — proving user plugins need zero `dots` changes.
 
 ---
 
-## 7. POC acceptance criteria
+## 8. POC acceptance criteria
 
 Acceptance criteria (parse-level checks verified in this environment; the
 live-session checks run on real hardware):
@@ -197,24 +223,26 @@ live-session checks run on real hardware):
 2. **Fault isolation**: a deliberately broken plugin loads → session keeps
    running, error recorded in `plugins-report.json`.
 3. **Nyx**: appears as a `shell` plugin; its toggle **is** `mascots.enabled`
-   (identical to the Mascots page switch); "Configure" opens the Mascots tab.
+   (identical to its Mascots page switch); "Configure" opens the plugin's own
+   page (dynamic `p_nyx`, loaded from `ui/plugins/nyx/`).
 4. **Green checks**: `luac -p` / `luacheck` / `Hyprland --verify-config` /
    `qmllint` / the repos' `scripts/check.sh`.
 5. **Visual**: the Plugins page renders live with both plugins listed.
 
 ---
 
-## 8. Non-goals (v0)
+## 9. Non-goals (v0)
 
 - Store / registry of *available* plugins.
 - `dots plugins add|remove`, version updates, `doctor` enforcement.
 - xturing Plugins tab, error badges on the page, keybind editor.
-- Generic shell-UI deploy (v1: shell payload conventions).
+- A public plugin UI kit (v0.1 pages import the shell kit via deployed
+  relative paths).
 - Anything niri.
 
 ---
 
-## 9. Open questions (for review)
+## 10. Open questions (for review)
 
 1. **`defaultEnabled`** semantics for future extractions (e.g. when
    `screenshots` becomes a plugin, existing users must not lose their binds
@@ -222,9 +250,13 @@ live-session checks run on real hardware):
 2. **Duplicate binds across plugins** — policy: last loaded wins vs. detected
    and reported.
 3. ~~Where the Plugins page lives~~ — **decided**: a Plugins group in the
-   settings panel (manager page `d_plugins` + the plugin's own page, e.g.
-   `d_nyx`; `plugin.json → settingsTab` points at it).
+   settings panel (manager page `d_plugins` + one dynamic page per plugin,
+   `p_<id>`, from `plugin.json → settings.page`).
 4. Naming: `plugins/` + `plugin.json` + "Plugins" group — confirm, or rename
    (extensions? modules?).
 5. ~~Fixture home~~ — **decided**: `samples/` in this repo; converted plugins
    live in `converted/` while being extracted.
+6. **Plugin UI kit**: v0.1 pages import the shell's editor kit by deployed
+   relative path (`../../../bar/edit`, `../../../../core`). Options for v0.2:
+   a stable public kit directory (`ui/sdk/`) vs. an injected host API (no
+   imports — the Nyx overlay philosophy applied to settings pages).
