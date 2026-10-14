@@ -24,6 +24,7 @@ Item {
     anchors.fill: parent
 
     property var bar: null
+    property var host: null   // injected SDK handle (equisdots/plugin-sdk)
 
     // ── local mirror of settings.json → dock ─────────────────────────────────
     property string dPosition: "bottom"
