@@ -83,6 +83,7 @@ the shell-tree copy is what Quickshell loads.
 | `toggle` | — | settings path | where the enable switch lives; default: `plugins.<id>.enabled` |
 | `settings` | — | object | the plugin ships its own settings page: `{ page, label?, icon? }`. `page` is a QML file in the repo, deployed with the UI to `ui/plugins/<id>/`; it appears in the Plugins group as `p_<id>` and Configure opens it (see §6) |
 | `settingsTab` | — | string | legacy: id of an existing shell settings tab (pre `settings.page`) |
+| `provides` | — | object | free-form contributions passed through untouched by the hosts and interpreted by consumers — never by this standard. Namespace keys by consumer (`"<consumer>": { ... }`) to avoid collisions |
 | `defaultEnabled` | — | bool (default `false`) | effective state when no switch exists in `settings.json` yet |
 
 Minimal `hypr` example (the POC fixture):
@@ -144,6 +145,9 @@ prints a JSON array sorted by `name`:
 Consumers: the shell **Plugins group** (manager page + per-plugin pages),
 `dots plugins`, and (later) an xturing tab. One implementation, three
 surfaces.
+
+Hosts pass manifest fields through untouched (e.g. `provides`), so consumers
+implement their own contribution rules without changes to this standard.
 
 ---
 

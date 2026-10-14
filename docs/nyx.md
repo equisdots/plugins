@@ -1,83 +1,60 @@
-# Nyx — completing the conversion, and its extensibility (review)
+# Nyx — the complete conversion (record)
 
-Status: **review only** — nothing in this document is implemented yet. It
-assesses what keeps Nyx from being a fully decoupled plugin and how its
-extension points should work through the plugin system.
+Status: **implemented** (2026-10, `branch/experimental`). This document is the
+design record: what coupled Nyx to the shell, what changed, and the extension
+rules Nyx defines through the plugin system.
 
-## Where Nyx still couples to the shell
+## What was coupled (and its resolution)
 
-| Coupling | Location | Effect |
-|---|---|---|
-| Static overlay import | `shell/ui/Mascots.qml` — `import "./plugins/nyx/front"` plus a direct `MascotsOverlay {}` instance | Nyx only works from the managed deploy path; a missing Nyx is a QML error; a user-cloned Nyx does not render |
-| Hardcoded species path | `shell/core/MascotsCatalog.qml` — `mascotsShipped` points at `ui/plugins/nyx/mascots` | Species only come from the managed deploy; no other plugin can contribute species |
-| Hardcoded deploy | `dots` — the `nyx)` case | Retires with the manifest-driven deploy (F1); Nyx is the first rider |
-| Shell-owned notch defaults | `shell/notch/defaults.json` | Nyx's notch cards ship with the shell instead of the plugin |
+| Coupling | Resolution |
+|---|---|
+| Static overlay import in `shell/ui/Mascots.qml` | Resolved: the wrapper resolves `provides.mascots.overlay` through the plugin catalog (`PluginsCatalog.uiUrl`) and loads it dynamically — `setSource` injects the constant API, `Binding`s keep live values (palette, catalog, stats, favorites) updated, `favoriteToggled` connects in `onLoaded`, and with no provider installed nothing renders |
+| Hardcoded species path in `shell/core/MascotsCatalog.qml` | Resolved: species and card dirs come from provider plugins (`provides.mascots.species` / `.cards`, resolved per plugin origin); the user dirs still win on `id` |
+| Shell-owned notch defaults (`shell/notch/defaults.json`) | Resolved: the cards moved into the plugin (`notch/`) |
+| Hardcoded deploy in `dots` (the `nyx)` case) | Pending F1 — the manifest-driven deploy retires it |
 
-## Complete conversion — plan
+## Extension rules (defined by this integration, not by the standard)
 
-1. **Dynamic overlay** (`ui/Mascots.qml`): resolve the overlay through the
-   plugin catalog — managed plugins from the shell-tree deploy, user plugins
-   via `file://` — and load it with a `Loader`:
-   - `setSource(url, { ... })` injects the documented API properties
-     (palette, settings path, widget hooks, catalog, stats, favorites);
-   - reactive values (palette, catalog, favorites, ...) update through an
-     en-bloc of `Binding` objects guarded by `loader.item`;
-   - the `favoriteToggled` handler connects in `onLoaded`;
-   - Nyx absent: the loader stays empty — no error, no island.
-2. **Dynamic species and cards** (`core/MascotsCatalog.qml`): the scans gain
-   a third source — installed plugins that *provide* species/cards (below).
-   The hardcoded Nyx path disappears; Nyx becomes a provider like any other.
-3. **Deploy**: F1 generic (`dots plugins add`); no Nyx-specific case.
-4. Optional: move `shell/notch/defaults.json` into Nyx (`notch/`), leaving
-   the shell with no shipped cards.
-
-Feasibility: the injection contract is already public (Nyx's README lists the
-overlay API), the wrapper is the static import's only consumer, and the
-property set is fixed — the change is contained to `ui/Mascots.qml` and the
-catalog. The delicate part is property-injection timing (initial properties
-vs. reactive bindings); the known-good pattern is `setSource` for the initial
-set and `Binding` for anything that changes afterwards.
-
-## Extensibility through the plugin system
-
-Goal: Nyx defines *extension points*; other plugins plug in without touching
-Nyx or the shell — drop a plugin in `plugins/`, enable it, and the island
-grows.
-
-Manifest addition (v0.2 proposal):
+The plugin *standard* only knows a generic, free-form `provides` object passed
+through by the hosts. The mascots integration defines its own keys, and Nyx is
+their first provider:
 
 ```json
 "provides": {
-  "mascots": { "species": "mascots" },
-  "notch":   { "cards": "notch" }
+  "mascots": {
+    "overlay": "front/MascotsOverlay.qml",
+    "species": "mascots",
+    "cards": "notch"
+  }
 }
 ```
 
-Resolution rules (extends the current catalog contract):
+Resolution rules:
 
-- Sources: the user dir (`~/.config/hypr/mascots/species/`) wins on `id`;
-  then every provider plugin, in plugin-scan order (user plugins first, then
-  managed, by name). First definition of an `id` wins.
-- Entries keep `_base` so relative QML (`entry`, `popover`) resolves exactly
-  the way it does today.
-- With a single provider (Nyx) the behavior is identical to today; extra
-  providers only add entries or override by `id`.
-- The editor (Plugins → Nyx) already renders any catalog entry with its
+- Sources: the user dirs (`~/.config/hypr/mascots/species/` / `notch/`) win on
+  `id`; then every provider plugin, in plugin-scan order (user plugins first,
+  then managed, by name). First definition of an `id` wins.
+- Entries keep `_base`, so relative QML (`entry`, `popover`) resolves exactly
+  the way it did before.
+- With a single provider (Nyx) the behavior is identical to before; extra
+  providers only add entries, or override by `id`.
+- The editor (Plugins → Nyx) renders any catalog entry with its
   `customizable` / `controls` options — species contributed by other plugins
   show up with their controls automatically.
 
-This makes Nyx the first plugin with extension points. Natural follow-ups
-after it: bar modules, panels and palettes as provider surfaces.
+Natural follow-ups: bar modules, panels and palettes as provider surfaces,
+each with its own rules defined by its consumer (never by this standard).
 
 ## Does the hub carry Nyx's code?
 
-Recommendation: **no**. The concentration folder (`plugins/`) is for plugins
-that ship through this repo. Nyx keeps its own repo as the single source of
-truth, and the hub references it (F1's registry will map ids to sources).
-Vendoring a copy here would only add drift risk.
+Recommendation (unchanged): **no**. The concentration folder (`plugins/`) is
+for plugins that ship through this repo. Nyx keeps its own repo as the single
+source of truth; the hub references it.
 
 ## Open points
 
-- Injection timing details for the dynamic overlay.
-- Precedence policy when two providers ship the same species `id`.
-- Whether `provides` deserves a schema entry in `plugins.md` at v0.2.
+- Precedence policy when two providers ship the same species `id` (today:
+  first wins) — revisit if it ever happens in practice.
+- `provides` may earn a consumer-key convention note in `plugins.md` once a
+  second consumer exists (today the generic passthrough is documented and the
+  mascots keys live in Nyx's README plus `shell/docs/mascots.md`).
