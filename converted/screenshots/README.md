@@ -19,12 +19,14 @@ screenshots/
 
 ## Deploy contract (dots, F1)
 
-- `scripts/`, `hypr.lua`, `plugin.json` go to `~/.config/hypr/plugins/screenshots/`
-  (the loader evaluates `hypr.lua` there; `mod.script()` resolves the scripts).
-- `ui/` goes to `~/.config/hypr/scripts/quickshell/ui/plugins/screenshots/ui/`
-  (the overlay is a standalone `quickshell -p` entry; its imports target the
-  shell tree). `screenshot.sh` resolves the deployed path first, then the
-  current shell copy, then its sibling `ui/` for dev/staging.
+- The **whole repo** goes to the shell tree at
+  `~/.config/hypr/scripts/quickshell/ui/plugins/screenshots/` (UI face: the
+  overlay is a standalone `quickshell -p` entry; its imports target the shell
+  tree). `screenshot.sh` resolves the overlay at the deployed path first, then
+  the current shell copy, then its sibling `ui/` for dev/staging.
+- The **runtime subset** also goes to `~/.config/hypr/plugins/screenshots/`:
+  `plugin.json`, `hypr.lua`, `scripts/` (the loader evaluates `hypr.lua` there;
+  `mod.script()` resolves the scripts).
 
 ## Dependencies
 

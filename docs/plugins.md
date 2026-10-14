@@ -43,13 +43,15 @@ Discovery = any directory containing a `plugin.json`. The user folder is
 scanned first, so a user plugin with the same `id` shadows the managed one
 (same rule as Nyx species/cards).
 
-The registry folder holds the **manifest**; payload lives wherever the plugin
-needs it. A `hypr` plugin keeps its `hypr.lua` next to its manifest; the UI of
-a `shell`/`mixed` plugin deploys into the shell tree at `ui/plugins/<id>/`
-(the old `ui/nyx` Nyx path, generalized).
+Deploy convention (managed plugins): the **whole repo** goes to the shell tree
+at `ui/plugins/<id>/` (the UI face: settings pages, overlays, wrappers — Nyx's
+old `ui/nyx` path, generalized), and the **runtime subset** additionally goes
+to the registry `~/.config/hypr/plugins/<id>/`: the manifest (always), plus
+`hypr.lua` and `scripts/` when present (what the loader runs; `mod.script()`
+resolves there). Nyx needs no restructuring for this — its repo *is* its UI.
 
-`plugins/` is the **installed registry**; the shell-tree copy is what the
-shell loads. This keeps discovery cheap and unambiguous.
+`plugins/` is the **installed registry** (discovery + the compositor side);
+the shell-tree copy is what Quickshell loads.
 
 ---
 
@@ -179,8 +181,10 @@ mod.bind("SUPER + SHIFT + H", hl.dsp.exec_cmd("notify-send 'Hello from a plugin'
 A plugin that declares `settings.page` ships **its own configuration UI**; the
 shell wires it dynamically:
 
-- **Deploy**: `dots` copies the plugin UI into the shell tree at
-  `ui/plugins/<id>/` (the Nyx precedent, generalized from the old `ui/nyx`).
+- **Deploy**: `dots` copies the whole plugin into the shell tree at
+  `ui/plugins/<id>/` (the Nyx precedent, generalized from the old `ui/nyx`);
+  the runtime subset (`plugin.json`, `hypr.lua`, `scripts/`) also lands in the
+  registry (see §1).
 - **Nav**: `EditorNav.withPlugins()` appends one item per installed plugin
   with a settings page to the Plugins group — id `p_<id>`, `label`/`icon`
   from the manifest — hideable and orderable through `settings.editor` like
@@ -191,8 +195,10 @@ shell wires it dynamically:
   (`property var bar`) — `bar.s()`, `bar.colors`, `bar.gotoPage()`.
 - **Kit imports**: at the deployed path, the shell's shared editor kit and
   core singletons resolve as `../../../bar/edit` and `../../../../core`.
-  Treat those as a documented v0.1 contract; a public kit path or an injected
-  host API is a v0.2 item (open question §10.6).
+  Managed pages live in the shell tree so these resolve; **user** plugins
+  (`plugins-user/`) load their page via `file://` from their own folder, so
+  their page must be self-contained QML (no shell-kit imports). A public kit
+  path or an injected host API is a v0.2 item (open question §10.6).
 - Nyx is the first adopter: `settings/NyxPage.qml` — the whole mascot/island
   menu moved into the plugin repo; the shell no longer owns that page.
 
