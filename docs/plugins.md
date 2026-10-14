@@ -44,8 +44,9 @@ scanned first, so a user plugin with the same `id` shadows the managed one
 (same rule as Nyx species/cards).
 
 Deploy convention (managed plugins): the **whole repo** goes to the shell tree
-at `ui/plugins/<id>/` (the UI face: settings pages, overlays, wrappers — Nyx's
-old `ui/nyx` path, generalized), and the **runtime subset** additionally goes
+at `ui/plugins/<id>/` (the UI face: settings pages, host adapters, overlays,
+wrappers — Nyx's old `ui/nyx` path, generalized), and the **runtime subset**
+additionally goes
 to the registry `~/.config/hypr/plugins/<id>/`: the manifest (always), plus
 `hypr.lua` and `scripts/` when present (what the loader runs; `mod.script()`
 resolves there). Nyx needs no restructuring for this — its repo *is* its UI.
@@ -83,6 +84,7 @@ the shell-tree copy is what Quickshell loads.
 | `toggle` | — | settings path | where the enable switch lives; default: `plugins.<id>.enabled` |
 | `settings` | — | object | the plugin ships its own settings page: `{ page, label?, icon? }`. `page` is a QML file in the repo, deployed with the UI to `ui/plugins/<id>/`; it appears in the Plugins group as `p_<id>` and Configure opens it (see §6) |
 | `settingsTab` | — | string | legacy: id of an existing shell settings tab (pre `settings.page`) |
+| `host` | — | string | managed plugins only: a QML host adapter (path relative to the plugin UI root) the shell mounts generically (`ui/PluginHosts.qml`). It runs inside the shell tree and may import the core kit; used for always-on UI (overlays, surfaces). Hosts may publish `frameObstacle` rects for the screen frame |
 | `provides` | — | object | free-form contributions passed through untouched by the hosts and interpreted by consumers — never by this standard. Namespace keys by consumer (`"<consumer>": { ... }`) to avoid collisions |
 | `defaultEnabled` | — | bool (default `false`) | effective state when no switch exists in `settings.json` yet |
 
