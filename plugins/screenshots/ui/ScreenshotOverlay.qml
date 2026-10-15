@@ -44,6 +44,12 @@ PanelWindow {
     property string cachedMode: Quickshell.env("QS_CACHED_MODE") || "false"
     property bool isVideoMode: cachedMode === "true"
 
+    // screenshot.sh resolver: the plugin's script across deploy layouts
+    // (managed registry copy, managed UI tree copy, user plugin) with the
+    // pre-cutover core path as the last resort. Used by the geometry flows
+    // below (scan-qr / apply selection), which run after the overlay opened.
+    readonly property string scriptCmd: "S=; for c in \"$HOME/.config/hypr/plugins/screenshots/scripts/screenshot.sh\" \"$HOME/.config/hypr/scripts/quickshell/ui/plugins/screenshots/scripts/screenshot.sh\" \"$HOME/.config/hypr/plugins-user/screenshots/scripts/screenshot.sh\" \"$HOME/.config/hypr/scripts/screenshot.sh\"; do [ -f \"$c\" ] && { S=\"$c\"; break; }; done; [ -n \"$S\" ] && exec bash \"$S\""
+
     onIsVideoModeChanged: {
         Quickshell.execDetached(["bash", "-c", "echo '" + (root.isVideoMode ? "true" : "false") + "' > " + paths.getCacheDir("screenshot") + "/video_mode"]);
         
@@ -973,7 +979,7 @@ PanelWindow {
     function performQrScan() {
         Quickshell.execDetached(["bash", "-c", "rm -f " + paths.getRunDir("screenshot") + "/qr_result"])
         root.isScanningQr = true; root.showQrPopup = false; qrModel.clear()
-        let cmd = `bash ~/.config/hypr/scripts/screenshot.sh --geometry "${root.geometryString}" --scan-qr`
+        let cmd = scriptCmd + ` --geometry "${root.geometryString}" --scan-qr`
         Quickshell.execDetached(["bash", "-c", cmd])
         qrWaitTimer.start()
     }   
@@ -990,7 +996,7 @@ PanelWindow {
     }
     
     function executeCapture(openEditor, isRecord) {
-        let cmd = `bash ~/.config/hypr/scripts/screenshot.sh --geometry "${root.geometryString}"`
+        let cmd = scriptCmd + ` --geometry "${root.geometryString}"`
         if (isRecord) {
             cmd += " --record"
             cmd += ` --desk-vol ${root.deskVol} --desk-mute ${root.deskMute}`
