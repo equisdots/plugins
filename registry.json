@@ -32,6 +32,30 @@
       "path": "plugins/rss-reader"
     },
     {
+      "id": "clipboard",
+      "name": "Clipboard",
+      "author": "xscriptor",
+      "description": "Clipboard manager panel (cliphist): text and image history with preview, paging and paste",
+      "source": "equisdots/plugins",
+      "path": "plugins/clipboard"
+    },
+    {
+      "id": "quicknotes",
+      "name": "QuickNotes",
+      "author": "xscriptor",
+      "description": "Scratch notepad panel with auto-save",
+      "source": "equisdots/plugins",
+      "path": "plugins/quicknotes"
+    },
+    {
+      "id": "file-search",
+      "name": "File Search",
+      "author": "xscriptor",
+      "description": "File search panel (fd/find) with debounced queries and open-in-app actions",
+      "source": "equisdots/plugins",
+      "path": "plugins/file-search"
+    },
+    {
       "id": "hello",
       "name": "Hello Plugin",
       "author": "equisdots",
