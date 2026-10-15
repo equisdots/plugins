@@ -17,6 +17,21 @@
       "path": "plugins/screenshots"
     },
     {
+      "id": "timex",
+      "name": "Timex",
+      "author": "xscriptor",
+      "description": "Time & weather: calendar/forecast popup, provider-driven engine and its settings page",
+      "source": "equisdots/timex"
+    },
+    {
+      "id": "rss-reader",
+      "name": "RSS Reader",
+      "author": "xscriptor",
+      "description": "Feed reader panel with search, per-feed filters and its own feed manager",
+      "source": "equisdots/plugins",
+      "path": "plugins/rss-reader"
+    },
+    {
       "id": "hello",
       "name": "Hello Plugin",
       "author": "equisdots",
