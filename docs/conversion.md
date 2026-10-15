@@ -16,6 +16,16 @@ Order (working list):
    the generic panel host and the `weather.sh` shim.
 3. `rss-reader` — feed reader panel — **done**: moved to the hub with a
    rebuilt UI, its own feed manager/settings page and the SUPER+O bind.
+4. `clipboard` — clipboard manager panel — **done**: hub plugin with its own
+   settings page (items per page + position) and the SUPER+C bind.
+5. `quicknotes` — scratch notepad — **done**: hub plugin with its own
+   settings page and the SUPER+Y bind.
+6. `file-search` — file search panel — **done**: hub plugin with its own
+   settings page and the SUPER+apostrophe bind.
+
+The `screenshots` plugin also owns the bar recording indicator now
+(`provides.bar.modules.recording` → `bar/Recording.qml`); the shell keeps no
+recording state.
 
 **Staying in the core (decided):** `idle-lock` and `monitors` are session
 infrastructure (unlock/PAM, display bring-up) — a broken plugin there is not
