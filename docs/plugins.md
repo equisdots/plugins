@@ -348,11 +348,18 @@ Changes to the standard:
    `Settings` store (copy-on-write, state-before-notify): the one-edit lag and
    the async-initial-load gap are fixed at the source, not per consumer.
 6. **Plugin-owned settings defaults.** `plugin.json → defaults` names a settings
-   fragment the plugin owns (`{"<scope>": {…}}`); `dots` merges it into
-   `settings.json` on install with the user's values winning. The core
-   `default_settings.json` no longer carries any plugin's defaults (e.g. the
-   `mascots` block moved from `hyprland` into `nyx/defaults.json`), so a plugin
-   is self-contained: code + UI + defaults all live in its repo.
+   fragment the plugin owns (`{"<scope>": {…}}`); `dots` **seeds the plugin's own
+   settings file** (`~/.config/hypr/plugins/<id>/settings.json`) from it — never
+   the core `settings.json`. The core `default_settings.json` carries no plugin
+   defaults (the `mascots` block moved from `hyprland` into `nyx/defaults.json`),
+   so a plugin is self-contained: code + UI + settings + defaults in its repo.
+7. **Plugin widget faces.** `provides.widgets.faces` lets a plugin ship its own
+   **desktop-widget types** (name/icon/defaults + variant QML files, relative to
+   the plugin UI root). The shell's `WidgetRegistry` merges them with the core
+   catalog and the redactor lists them; the **`weather` widget moved out of
+   `shell` into `timex`** (which now owns its faces). Consumer rule lives in
+   each consumer, never in the standard (same as `provides.bar.modules` /
+   `provides.panels`).
 6. **Manifest-driven install (F1).** `dots plugins add|remove|available`
    (resolve the registry source, fetch, deploy by convention, enable,
    compat-gated) plus the Available section in the Plugins page, fed by the
