@@ -44,9 +44,15 @@ declared as a `standalone` entry: `dots` generates a root-level launcher
 (`plugin-screenshots-ScreenshotOverlay.qml`) so it runs with the shell tree
 as the config root and imports the core kit; the script launches the launcher
 and resolves its own copy across deploy layouts (managed registry copy,
-managed UI tree, user plugin, transitional core path). Other changes vs. the
-original: notification titles lost their emoji; `caching.sh` is vendored
-unchanged.
+managed UI tree, user plugin, transitional core path).
+
+The recording bar indicator is plugin-provided too: the manifest declares
+`provides.bar.modules.recording` (`bar/Recording.qml`) and the bar resolves
+the implementation for the core `recording` slot — the shell keeps no
+recording state (`bar.isRecording` and the core poller were removed). The
+plugin's page (`p_screenshots`) covers enablement through the standard
+manager; other changes vs. the original: notification titles lost their
+emoji; `caching.sh` is vendored unchanged.
 
 ## Enable
 

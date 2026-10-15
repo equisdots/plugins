@@ -7,5 +7,12 @@
   "type": "mixed",
   "compat": { "hyprland": ">=0.55" },
   "standalone": ["ui/ScreenshotOverlay.qml"],
+  "provides": {
+    "bar": {
+      "modules": {
+        "recording": { "comp": "bar/Recording.qml", "label": "Recording", "icon": "\uf28d" }
+      }
+    }
+  },
   "defaultEnabled": true
 }
