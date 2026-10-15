@@ -347,6 +347,12 @@ Changes to the standard:
 5. **Reactive settings.** The shell's `Config` is now a façade over the SDK
    `Settings` store (copy-on-write, state-before-notify): the one-edit lag and
    the async-initial-load gap are fixed at the source, not per consumer.
+6. **Plugin-owned settings defaults.** `plugin.json → defaults` names a settings
+   fragment the plugin owns (`{"<scope>": {…}}`); `dots` merges it into
+   `settings.json` on install with the user's values winning. The core
+   `default_settings.json` no longer carries any plugin's defaults (e.g. the
+   `mascots` block moved from `hyprland` into `nyx/defaults.json`), so a plugin
+   is self-contained: code + UI + defaults all live in its repo.
 6. **Manifest-driven install (F1).** `dots plugins add|remove|available`
    (resolve the registry source, fetch, deploy by convention, enable,
    compat-gated) plus the Available section in the Plugins page, fed by the
