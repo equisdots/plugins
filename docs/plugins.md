@@ -85,6 +85,7 @@ the shell-tree copy is what Quickshell loads.
 | `settings` | — | object | the plugin ships its own settings page: `{ page, label?, icon? }`. `page` is a QML file in the repo, deployed with the UI to `ui/plugins/<id>/`; it appears in the Plugins group as `p_<id>` and Configure opens it (see §6) |
 | `settingsTab` | — | string | legacy: id of an existing shell settings tab (pre `settings.page`) |
 | `host` | — | string | managed plugins only: a QML host adapter (path relative to the plugin UI root) the shell mounts generically (`ui/PluginHosts.qml`). It runs inside the shell tree and may import the core kit; used for always-on UI (overlays, surfaces). Hosts may publish `frameObstacle` rects for the screen frame |
+| `standalone` | — | string[] | managed plugins only: QML entries that run as their own Quickshell instance (paths relative to the plugin UI root). `dots` generates a root-level launcher per entry (`plugin-<id>-<basename>.qml`, importing the entry's directory) so it runs with the shell tree as the config root and can import the core kit; the plugin's own script launches that launcher |
 | `provides` | — | object | free-form contributions passed through untouched by the hosts and interpreted by consumers — never by this standard. Namespace keys by consumer (`"<consumer>": { ... }`) to avoid collisions |
 | `defaultEnabled` | — | bool (default `false`) | effective state when no switch exists in `settings.json` yet |
 
@@ -297,9 +298,11 @@ live-session checks run on real hardware):
 
 ## 10. Open questions (for review)
 
-1. **`defaultEnabled`** semantics for future extractions (e.g. when
-   `screenshots` becomes a plugin, existing users must not lose their binds
-   silently — migration policy).
+1. ~~**`defaultEnabled`** semantics for future extractions~~ — **decided**:
+   `dots` keeps a `DEFAULT_PLUGINS` list and deploys those through the
+   registry convention on every install/update without writing a toggle, so
+   `defaultEnabled` keeps existing users whole (the `screenshots` cutover is
+   the first case).
 2. **Duplicate binds across plugins** — policy: last loaded wins vs. detected
    and reported.
 3. ~~Where the Plugins page lives~~ — **decided**: a Plugins group in the
