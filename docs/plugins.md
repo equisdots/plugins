@@ -215,25 +215,36 @@ shell wires it dynamically:
 
 ---
 
-## 7. `dots` CLI (v0 minimum)
+## 7. `dots` CLI
 
 - `dots plugins` — table of installed plugins from the scan: id, name, version,
-  type, enabled.
+  type, state, compat.
+- `dots plugins available` — the install registry: every known plugin with its
+  source and `installed`/`available` state.
+- `dots plugins add <id> [--no-enable] [--force]` — manifest-driven deploy:
+  resolve `source` (+ `path`) in `registry.json`, fetch the repo, deploy by
+  the convention in §6 (whole plugin → shell tree; runtime subset → registry),
+  enable it and reload Hyprland. A violated `compat` refuses the install
+  (`--force` overrides); unverifiable ranges only warn.
+- `dots plugins remove <id>` — removes the managed copies (registry + UI),
+  switches the toggle off and reloads. User plugins (`plugins-user/`) are not
+  managed by dots and are refused.
 - `dots plugins enable|disable <id>` — writes the effective toggle and
   reloads Hyprland (`hyprctl reload`).
 
-Deploy in v0: Nyx's UI rsyncs to `ui/plugins/nyx/` and its manifest to
-`~/.config/hypr/plugins/nyx/` (its existing deploy step). **Manifest-driven deploy** (`add`/`remove`/
-`doctor`) is F1; the POC fixture installs by simply copying its folder into
-`plugins-user/hello/` — proving user plugins need zero `dots` changes.
+Nyx ships with the stack: `dots install` deploys any repo whose root carries a
+`plugin.json` through the same generic convention (no per-plugin cases). The
+POC fixture still installs by simply copying its folder into
+`plugins-user/hello/` — user plugins need zero `dots` changes.
 
 ### Registry (install-time index)
 
 `registry.json` (repo root) lists every known plugin and where it comes from —
-this repo, `equisdots/nyx`, or any external repo. The runtime never reads it
-(installed plugins are discovered by folder scan, §4); it is the **install-time
-source list** for `dots plugins add <id>` (F1) and the seed of a future store
-view (available vs. installed).
+this repo, `equisdots/nyx`, or any external repo. The installed scan never
+reads it (installed plugins are discovered by folder scan, §4); it is the
+**install-time source list** for `dots plugins add <id>`, and `dots` deploys a
+copy into the shell tree (`plugins-registry.json`) that feeds the Available
+section of the Plugins page (available vs. installed).
 
 | Field | Req | Notes |
 |---|---|---|
@@ -273,8 +284,10 @@ live-session checks run on real hardware):
 
 ## 9. Non-goals (v0)
 
-- Store / registry of *available* plugins.
-- `dots plugins add|remove`, version updates, `doctor` enforcement.
+- ~~Store / registry of *available* plugins~~ — landed (F1): `dots plugins
+  available` plus the Available section in the Plugins page.
+- ~~`dots plugins add|remove`~~ — landed; version updates and `doctor`
+  release-gating remain future work.
 - xturing Plugins tab, error badges on the page, keybind editor.
 - A public plugin UI kit (v0.1 pages import the shell kit via deployed
   relative paths).
@@ -331,3 +344,10 @@ Changes to the standard:
 5. **Reactive settings.** The shell's `Config` is now a façade over the SDK
    `Settings` store (copy-on-write, state-before-notify): the one-edit lag and
    the async-initial-load gap are fixed at the source, not per consumer.
+6. **Manifest-driven install (F1).** `dots plugins add|remove|available`
+   (resolve the registry source, fetch, deploy by convention, enable,
+   compat-gated) plus the Available section in the Plugins page, fed by the
+   registry copy `dots` deploys into the shell tree. The per-plugin Nyx deploy
+   case is now the generic convention; during the experimental phase the hub
+   and plugin sources track `branch/experimental`
+   (`EQUISDOTS_PLUGIN_BRANCH` overrides).
