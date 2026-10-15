@@ -7,8 +7,9 @@ Every converted plugin lands in the **`plugins/`** concentration folder.
 Order (working list):
 
 1. `screenshots` — screenshots + recording (script + binds + UI overlay) —
-   **staged** at `plugins/screenshots/`; still shipped by `hyprland` +
-   `shell` until the deploy (F1) and the cutover land.
+   **done (F2)**: cut over; the core copies (hyprland binds + script, shell
+   overlay) are removed and `dots` installs the plugin by default
+   (`DEFAULT_PLUGINS`).
 2. `idle-lock` — hypridle + lock (PAM / sudoers touchpoints)
 3. `monitors` — monitor manager + scale menu + display-config restorer
 
