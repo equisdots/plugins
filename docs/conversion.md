@@ -27,6 +27,13 @@ The `screenshots` plugin also owns the bar recording indicator now
 (`provides.bar.modules.recording` → `bar/Recording.qml`); the shell keeps no
 recording state.
 
+Bar islands follow the same route: the `timex` plugin ships the weather island
+(`provides.bar.modules.weather` → `bar/Weather.qml`, self-polling its engine —
+the shell's `weather.sh` shim and the bar weather poller are gone) and the
+`sysmon` plugin ships the CPU/RAM island (`provides.bar.modules.sysmon` →
+`bar/Sysmon.qml`, reading the core `SysData`). `sysmon` joins the default set;
+its floating monitor became an explicit opt-in toggle (`sysmon.panelEnabled`).
+
 **Staying in the core (decided):** `idle-lock` and `monitors` are session
 infrastructure (unlock/PAM, display bring-up) — a broken plugin there is not
 "a missing feature", it is an unusable session, so they stay in the system
