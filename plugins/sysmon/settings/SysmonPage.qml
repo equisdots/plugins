@@ -23,6 +23,7 @@ Item {
     property bool dShowCpu: true
     property bool dShowRam: true
     property bool dShowTemp: true
+    property bool dPanelEnabled: false
 
     readonly property var cfg: {
         if (root.host && root.host.settings) return root.host.settings.section;
@@ -40,6 +41,7 @@ Item {
         root.dShowCpu = d.showCpu !== false;
         root.dShowRam = d.showRam !== false;
         root.dShowTemp = d.showTemp !== false;
+        root.dPanelEnabled = d.panelEnabled === true;
     }
     Component.onCompleted: root.syncFromConfig()
     onHostChanged: if (root.host) root.syncFromConfig()
@@ -88,8 +90,15 @@ Item {
                     }
                     EditLabel {
                         bar: root.bar; width: parent.width
-                        text: "A floating system monitor. Choose the corner, the scale, the opacity and which metrics to show."
+                        text: "The CPU/RAM bar island ships with the plugin; this page configures the optional floating monitor card (corner, scale, opacity and metrics)."
                         font.pixelSize: bar.s(11); color: bar.colors.subtext0; wrapMode: Text.WordWrap
+                    }
+
+                    SectionTitle { bar: root.bar; text: "Floating monitor" }
+                    RowLayout {
+                        width: parent.width; spacing: bar.s(12)
+                        Text { text: "Show the monitor card"; font.family: "Hack Nerd Font"; font.pixelSize: bar.s(12); color: bar.colors.text; Layout.fillWidth: true }
+                        ToggleSwitch { bar: root.bar; checked: root.dPanelEnabled; onToggled: { root.dPanelEnabled = checked; root.set("panelEnabled", checked); } }
                     }
 
                     SectionTitle { bar: root.bar; text: "Position" }

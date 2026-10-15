@@ -9,6 +9,11 @@ import Quickshell.Io
 // a small card with live CPU / RAM / temperature bars. Reads the plugin's
 // scope (`sysmon`) through the injected handle and the live stats via
 // `host.stats` (SysData). Colors follow the active palette (`host.colors`).
+//
+// The floating monitor is opt-in: it only publishes the surface while
+// `sysmon.panelEnabled === true` (its settings page toggles it). The plugin's
+// bar island (bar/Sysmon.qml, provides.bar.modules) is independent of this
+// flag — it follows the plugin master switch and its bar slot.
 // ═══════════════════════════════════════════════════════════════════════════
 
 Item {
@@ -37,6 +42,7 @@ Item {
     property bool showCpu: true
     property bool showRam: true
     property bool showTemp: true
+    property bool panelEnabled: false
 
     function syncCfg() {
         let d = (host && host.settings) ? host.settings.all() : {};
@@ -48,6 +54,7 @@ Item {
         showCpu = d.showCpu !== false;
         showRam = d.showRam !== false;
         showTemp = d.showTemp !== false;
+        panelEnabled = d.panelEnabled === true;
     }
     function subscribeStats() { if (root.host && root.host.stats) root.host.stats.subscribe(); }
     Component.onCompleted: { root.syncCfg(); root.subscribeStats(); }
@@ -62,9 +69,10 @@ Item {
     function s(v) { return Math.round(v * uiScale); }
 
     // ── the surface (declared to the SDK manager) ──────────────────────────
-    readonly property var surfaces: [
+    // Published only while the floating monitor is enabled (panelEnabled).
+    readonly property var surfaces: root.panelEnabled ? [
         { id: "sysmon", kind: "overlay", screen: "all", content: contentComp }
-    ]
+    ] : []
 
     Component {
         id: contentComp
