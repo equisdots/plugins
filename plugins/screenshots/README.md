@@ -36,11 +36,17 @@ hyprland installer already installs them.
 
 ## Status
 
-Staged in this repo while the feature still ships inside `hyprland`
-(`keybinds.lua`) and `shell` (`ScreenshotOverlay.qml`). The cutover removes
-those copies once `dots` learns the manifest-driven deploy (F1). Changes vs.
-the original: overlay path resolution is plugin-aware; notification titles
-lost their emoji; `caching.sh` is vendored unchanged.
+Cut over: the feature no longer ships inside `hyprland` (`keybinds.lua`) or
+`shell` (`ScreenshotOverlay.qml`); those copies are removed and `dots`
+installs this plugin by default (`DEFAULT_PLUGINS`: deploy by convention; the
+manifest's `defaultEnabled` keeps it on for existing users). The overlay is
+declared as a `standalone` entry: `dots` generates a root-level launcher
+(`plugin-screenshots-ScreenshotOverlay.qml`) so it runs with the shell tree
+as the config root and imports the core kit; the script launches the launcher
+and resolves its own copy across deploy layouts (managed registry copy,
+managed UI tree, user plugin, transitional core path). Other changes vs. the
+original: notification titles lost their emoji; `caching.sh` is vendored
+unchanged.
 
 ## Enable
 

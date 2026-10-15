@@ -327,11 +327,13 @@ fi
 # ---------------------------------------------------------
 # PHASE 2: UI Trigger (Launch Standalone Quickshell Overlay)
 # ---------------------------------------------------------
-# Standalone Quickshell overlay. Deployed: the plugin's ui/ ships in the shell
-# tree (ui/plugins/screenshots/ui/); transitional fallback: the current shell
-# copy; dev/staging fallback: the sibling ui/ of this script.
+# Standalone Quickshell overlay. Deployed: dots generates a root-level
+# launcher from the manifest "standalone" entry (runs with the shell tree as
+# the config root, so the overlay can import the core kit). Transitional
+# fallback: the pre-cutover shell copy; dev/staging: the sibling ui/ of this
+# script.
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
-QML_PATH="$CONFIG_DIR/hypr/scripts/quickshell/ui/plugins/screenshots/ui/ScreenshotOverlay.qml"
+QML_PATH="$CONFIG_DIR/hypr/scripts/quickshell/plugin-screenshots-ScreenshotOverlay.qml"
 [ -f "$QML_PATH" ] || QML_PATH="$CONFIG_DIR/hypr/scripts/quickshell/ScreenshotOverlay.qml"
 [ -f "$QML_PATH" ] || QML_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/ui/ScreenshotOverlay.qml"
 

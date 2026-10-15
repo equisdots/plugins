@@ -6,5 +6,6 @@
   "description": "Screenshots (area/full/edit) and screen recording with virtual audio",
   "type": "mixed",
   "compat": { "hyprland": ">=0.55" },
+  "standalone": ["ui/ScreenshotOverlay.qml"],
   "defaultEnabled": true
 }
