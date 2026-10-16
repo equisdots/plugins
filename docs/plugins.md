@@ -54,6 +54,30 @@ resolves there). Nyx needs no restructuring for this — its repo *is* its UI.
 `plugins/` is the **installed registry** (discovery + the compositor side);
 the shell-tree copy is what Quickshell loads.
 
+### Identity & collisions
+
+`plugin.json → id` is the plugin's identity: stable, globally unique, and
+the folder name must match it. Duplicates are prevented locally — no CI
+involved — at every gate where an id can enter the system:
+
+- **authoring** — the hub's smoke harness (`tests/smoke.sh`) rejects
+  duplicate ids across the concentration folder, duplicate or broken registry
+  entries, hub-local entries that do not resolve to a folder with the
+  matching id, and hub plugins missing from the registry;
+- **install** — `dots` refuses a registry with duplicate ids and verifies the
+  fetched manifest declares exactly the requested id before deploying;
+- **runtime** — collisions are never resolved silently: the shell's scan
+  keeps the user-first winner and lists every shadowed copy under `shadowed`
+  (plus a `dirMismatch` flag when a folder name does not match its manifest),
+  the Hyprland loader records losing directories as `status: "collision"` in
+  `plugins-report.json`, the Plugins manager shows a warning on the affected
+  card, and `dots doctor` reports registry duplicates, folder mismatches and
+  runtime collisions.
+
+User plugins shadowing managed ones (the same id in both registry folders) is
+a by-design precedence rule — the point is that a duplicate can only happen
+*visibly*.
+
 ---
 
 ## 2. Manifest — `plugin.json`

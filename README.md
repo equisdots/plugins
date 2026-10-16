@@ -11,6 +11,7 @@ converted from the stack, samples, or third-party contributions.
 | `docs/testing.md` | How to deploy the experimental branches on a live session (checklist + rollback) |
 | `plugins/` | **Every plugin lives here** — one folder per plugin, folder name = `plugin.json → id`, any origin; `_template/` is the scaffold |
 | `registry.json` | Install-time index: every known plugin and its source repo (for `dots plugins add`, future store) |
+| `tests/smoke.sh` | Local checks (no CI): manifests, `qmldir` imports, scan resolution, lints **plus hub id integrity** (duplicate ids, registry consistency, every hub plugin registered) |
 
 ## How it works (v0)
 
@@ -19,9 +20,11 @@ converted from the stack, samples, or third-party contributions.
   `~/.config/hypr/plugins-user/<id>/` (yours; wins on `id` collisions).
 - The settings panel grows a **Plugins** group: every installed plugin shows
   up with an enable/disable toggle and a Configure shortcut to its own page.
-- Enable state lives in `settings.json` — `plugins.<id>.enabled` by default,
-  or the plugin's own switch when its manifest says so (`toggle`); Nyx, for
-  example, points at `mascots.enabled` so there is only one switch.
+- Enable state lives in the plugin's **own settings file**
+  (`~/.config/hypr/plugins/<id>/settings.json`) under the manifest's `toggle`
+  path (`plugins.<id>.enabled` by default, or the plugin's own switch — Nyx,
+  for example, points at `mascots.enabled` so there is only one switch); the
+  core `settings.json` only carries the config-menu flag.
 - `hypr` / `mixed` plugins ship a `hypr.lua` fragment that the Hyprland config
   runs at load time with an injected SDK (`mod.*`). A failing plugin never
   aborts the config; errors land in `~/.cache/equisdots/plugins-report.json`.
