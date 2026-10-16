@@ -33,6 +33,14 @@
           "icon": "\udb81\udcc5"
         }
       }
+    },
+    "panels": {
+      "swapbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Swap"
+      }
     }
   }
 }

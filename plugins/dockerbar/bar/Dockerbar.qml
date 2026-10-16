@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color6"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle dockerbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/dockerbar/scripts/dockerbar.sh"
 
     property string value: ""

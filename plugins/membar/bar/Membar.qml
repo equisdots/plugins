@@ -17,6 +17,8 @@ ModulePill {
 
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/membar/"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle membar"])
 
     Component.onCompleted: SysData.subscribe()
     Component.onDestruction: SysData.unsubscribe()

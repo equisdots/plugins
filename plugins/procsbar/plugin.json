@@ -33,6 +33,14 @@
           "icon": "\udb81\udc6e"
         }
       }
+    },
+    "panels": {
+      "procsbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Processes"
+      }
     }
   }
 }

@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color5"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle kernelbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/kernelbar/scripts/kernelbar.sh"
 
     property string value: ""

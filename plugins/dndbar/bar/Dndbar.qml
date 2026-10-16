@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color5"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle dndbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/dndbar/scripts/dndbar.sh"
 
     property string value: ""

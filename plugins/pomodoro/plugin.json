@@ -33,6 +33,14 @@
           "icon": "\udb81\udd1b"
         }
       }
+    },
+    "panels": {
+      "pomodoro": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Pomodoro"
+      }
     }
   }
 }

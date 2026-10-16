@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color5"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle mprisbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/mprisbar/scripts/mprisbar.sh"
 
     property string value: ""

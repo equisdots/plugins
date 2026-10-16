@@ -33,6 +33,14 @@
           "icon": "\udb82\udc13"
         }
       }
+    },
+    "panels": {
+      "cryptobar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Crypto"
+      }
     }
   }
 }

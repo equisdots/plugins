@@ -33,6 +33,14 @@
           "icon": "\udb81\udc93"
         }
       }
+    },
+    "panels": {
+      "kernelbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Kernel"
+      }
     }
   }
 }

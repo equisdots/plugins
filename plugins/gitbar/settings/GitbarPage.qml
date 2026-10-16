@@ -6,6 +6,7 @@ import qs.core
 Item {
     id: page
     property var bar: null
+    property var host: null
 
     ColumnLayout {
         anchors.fill: parent
@@ -27,6 +28,10 @@ Item {
                 Text { text: "Glyph"; font.family: "Hack Nerd Font"; font.pixelSize: 12; color: Theme.text }
                 Text { text: "󰊢"; font.family: "Hack Nerd Font"; font.pixelSize: 18; color: Theme.mauve }
             }
+        }
+        PluginPositionRow {
+            host: page.host
+            Layout.fillWidth: true
         }
         Item { Layout.fillHeight: true }
     }

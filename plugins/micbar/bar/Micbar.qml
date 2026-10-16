@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color1"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle micbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/micbar/scripts/micbar.sh"
 
     property string value: ""

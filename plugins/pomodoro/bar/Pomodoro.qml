@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color1"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle pomodoro"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/pomodoro/scripts/pomodoro.sh"
 
     property string value: ""

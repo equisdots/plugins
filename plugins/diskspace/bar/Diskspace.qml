@@ -17,6 +17,9 @@ ModulePill {
 
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/diskspace/scripts/diskspace.sh"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle diskspace"])
+
     property string value: ""
     function refresh() { reader.running = false; reader.running = true; }
     Process {

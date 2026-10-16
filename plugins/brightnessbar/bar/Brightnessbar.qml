@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color3"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle brightnessbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/brightnessbar/scripts/brightnessbar.sh"
 
     property string value: ""

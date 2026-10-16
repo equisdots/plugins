@@ -33,6 +33,14 @@
           "icon": "\udb80\ude10"
         }
       }
+    },
+    "panels": {
+      "fanspeed": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Fan"
+      }
     }
   }
 }

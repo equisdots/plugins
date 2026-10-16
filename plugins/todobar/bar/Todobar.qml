@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color2"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle todobar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/todobar/scripts/todobar.sh"
 
     property string value: ""

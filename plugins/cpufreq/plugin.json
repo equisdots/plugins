@@ -33,6 +33,14 @@
           "icon": "\udb83\udee0"
         }
       }
+    },
+    "panels": {
+      "cpufreq": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "CPU Frequency"
+      }
     }
   }
 }

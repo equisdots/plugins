@@ -17,6 +17,9 @@ ModulePill {
 
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/uptimebar/scripts/uptimebar.sh"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle uptimebar"])
+
     property string value: ""
     function refresh() { reader.running = false; reader.running = true; }
     Process {

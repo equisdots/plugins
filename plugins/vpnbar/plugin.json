@@ -33,6 +33,14 @@
           "icon": "\udb81\udd82"
         }
       }
+    },
+    "panels": {
+      "vpnbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 260,
+        "label": "VPN"
+      }
     }
   }
 }

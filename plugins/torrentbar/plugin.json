@@ -33,6 +33,14 @@
           "icon": "\udb80\ude08"
         }
       }
+    },
+    "panels": {
+      "torrentbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Torrents"
+      }
     }
   }
 }

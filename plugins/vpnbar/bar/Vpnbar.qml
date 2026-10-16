@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color2"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle vpnbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/vpnbar/scripts/vpnbar.sh"
 
     property string value: ""

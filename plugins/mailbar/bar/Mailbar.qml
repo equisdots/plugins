@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color6"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle mailbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/mailbar/scripts/mailbar.sh"
 
     property string value: ""

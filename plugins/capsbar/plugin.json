@@ -33,6 +33,14 @@
           "icon": "\udb82\ude9b"
         }
       }
+    },
+    "panels": {
+      "capsbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Caps Lock"
+      }
     }
   }
 }

@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color4"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle nightlight"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/nightlight/scripts/nightlight.sh"
 
     property string value: ""

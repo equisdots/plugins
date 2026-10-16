@@ -33,6 +33,14 @@
           "icon": "\udb80\udc79"
         }
       }
+    },
+    "panels": {
+      "batteryplus": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Battery Plus"
+      }
     }
   }
 }

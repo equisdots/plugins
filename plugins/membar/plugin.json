@@ -33,6 +33,14 @@
           "icon": "\udb80\udf5b"
         }
       }
+    },
+    "panels": {
+      "membar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 320,
+        "label": "Memory"
+      }
     }
   }
 }

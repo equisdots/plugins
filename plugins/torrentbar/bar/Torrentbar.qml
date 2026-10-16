@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color1"
 
+    onClicked: Quickshell.execDetached(["bash", "-c",
+        "~/.config/hypr/scripts/qs_manager.sh toggle torrentbar"])
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/torrentbar/scripts/torrentbar.sh"
 
     property string value: ""
