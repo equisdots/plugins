@@ -411,3 +411,6 @@ Changes to the standard:
     loader applies them at evaluation time. **The plugin owns the action; the
     user owns the key.** A disabled plugin keeps its last known binds visible
     (`bindsCached`) so the editor shows what would come back before re-enabling.
+    The **core's own shortcuts** (`keybinds.lua`) are listed read-only in the
+    editor and a capture that collides with one is **refused**: a plugin
+    override never silently removes a core bind.

@@ -23,6 +23,22 @@ The page lives in the Plugins group (enabled by default). A disabled plugin
 keeps its last known binds visible (`cached`) so you can see what would come
 back — and pre-set keys — before re-enabling it.
 
+## Core vs plugins (who owns what)
+
+- **The core owns its defaults** (`keybinds.lua`): SUPER+SHIFT+S, +X, +Q… The
+  editor lists them in the read-only **Core (default)** section (live from
+  `hyprctl binds`), and **refuses a capture that collides with a core key** —
+  a plugin override must never silently remove a core shortcut. If a
+  hand-edited file already points at a core key, the row flags
+  `core — …`.
+- **Plugins manage their own state**: their binds belong to the plugin
+  (enabled/disabled + per-bind overrides in the plugin's own settings file).
+  Two plugins sharing a key is allowed with a visible note (both sides are
+  plugin state); a muted bind claims nothing, so the core key underneath (if
+  any) keeps working.
+- Pure matching/attribution logic lives in `ui/Binds.js` (dependency-free,
+  node-tested by `tests/binds.test.js`).
+
 ## Plugin authoring notes
 
 - `mod.bind(key, dispatcher, { label = "…", id = "…" })`: the `label` feeds

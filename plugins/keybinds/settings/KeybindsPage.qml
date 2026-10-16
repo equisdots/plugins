@@ -6,6 +6,7 @@ import Quickshell.Io
 import qs.ui.bar.edit
 import qs.ui.bar
 import qs.core
+import "../ui/Binds.js" as Binds
 
 // ═══════════════════════════════════════════════════════════════════════════
 // KeybindsPage — the Keybinds plugin's own settings page (equisdots standard).
@@ -84,12 +85,37 @@ Item {
         return null;
     }
 
+    // ── live binds (hyprctl) → the core's own shortcuts ───────────────────
+    // The core owns its defaults (keybinds.lua): they are shown read-only and
+    // a capture onto a core key is REFUSED — a plugin override must never
+    // silently remove a core shortcut. Plugin binds are attributed through
+    // the report (see ui/Binds.js).
+    property var liveBinds: []
+    readonly property var coreList: Binds.coreBinds(root.liveBinds, root.report)
+    property string captureNotice: ""
+
+    function reloadCoreBinds() { coreBindsReader.running = false; coreBindsReader.running = true; }
+    Process {
+        id: coreBindsReader
+        command: ["bash", "-c", "hyprctl binds -j 2>/dev/null || echo '[]'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let o = JSON.parse(this.text || "[]");
+                    root.liveBinds = Array.isArray(o) ? o : [];
+                } catch (e) { root.liveBinds = []; }
+            }
+        }
+    }
+    Component.onCompleted: root.reloadCoreBinds()
+
     // ── capture state (one bind at a time) ────────────────────────────────
     property string captureDir: ""
     property string captureBind: ""
     readonly property bool capturing: root.captureBind !== ""
 
     function startCapture(e, b) {
+        root.captureNotice = "";
         root.captureDir = String(e.dir || "");
         root.captureBind = String(b.id || "");
     }
@@ -97,6 +123,13 @@ Item {
     function commitCapture(combo) {
         let e = root.entryByDir(root.captureDir);
         let id = root.captureBind;
+        let hit = Binds.coreHit(combo, root.coreList);
+        if (hit !== "") {
+            root.captureNotice = combo + " is a core shortcut (" + hit + ") — pick another key.";
+            root.cancelCapture();
+            return;
+        }
+        root.captureNotice = "";
         root.cancelCapture();
         if (e && id !== "") root.writeOverride(e, id, combo);
     }
@@ -208,7 +241,7 @@ Item {
         reloadTimer.restart();
     }
 
-    Process { id: hyprReload; command: ["hyprctl", "reload"] }
+    Process { id: hyprReload; command: ["hyprctl", "reload"]; onExited: root.reloadCoreBinds() }
     Timer { id: reloadTimer; interval: 250; onTriggered: { hyprReload.running = false; hyprReload.running = true; } }
 
     // ── derived helpers ────────────────────────────────────────────────────
@@ -220,7 +253,9 @@ Item {
         }
         return false;
     }
-    // Effective-key collision against the other plugins' binds (report data).
+    // Effective-key collision against the other plugins' binds (report) and
+    // the core's own shortcuts (refused on capture; flagged here for
+    // hand-edited files that already point at a core key).
     function conflictsFor(e, b) {
         let key = String(b.key || "");
         if (b.disabled === true || key === "") return "";
@@ -236,6 +271,8 @@ Item {
                     hits.push(String(p.id || "?") + ": " + String(o.label || o.id || ""));
             }
         }
+        let hit = Binds.coreHit(key, root.coreList);
+        if (hit !== "") hits.push("core — " + hit);
         return hits.join("  ·  ");
     }
     function statusText(e) {
@@ -298,8 +335,19 @@ Item {
                             compact: true
                             icon: ""
                             label: "Refresh"
-                            onActivated: root.reloadReport()
+                            onActivated: { root.reloadReport(); root.reloadCoreBinds(); }
                         }
+                    }
+
+                    // Capture refusal / collision notice (core keys are owned).
+                    EditLabel {
+                        visible: root.captureNotice !== ""
+                        bar: root.bar
+                        width: parent.width
+                        text: root.captureNotice
+                        font.pixelSize: bar.s(11)
+                        color: bar.colors.peach
+                        wrapMode: Text.WordWrap
                     }
 
                     Repeater {
@@ -486,6 +534,86 @@ Item {
                         bar: root.bar
                         width: parent.width
                         text: "No plugin shortcuts yet. Plugins declare their binds in their hypr.lua (mod.bind); enable one and press Refresh — the loader writes them to plugins-report.json."
+                        font.pixelSize: bar.s(11)
+                        color: bar.colors.subtext0
+                        wrapMode: Text.WordWrap
+                    }
+
+                    // ── Core (default): the core's own shortcuts ──────────
+                    // Read-only reference: these belong to the core config
+                    // (keybinds.lua). Plugin keys that collide with one are
+                    // refused on capture — a plugin never removes a core bind.
+                    SectionTitle {
+                        width: parent.width
+                        bar: root.bar
+                        text: "Core (default)"
+                    }
+                    EditLabel {
+                        bar: root.bar
+                        width: parent.width
+                        text: "Shipped by the core (keybinds.lua) — always on, not editable here. They stay in the core's hands; plugin overrides below can never take one of these keys."
+                        font.pixelSize: bar.s(11)
+                        color: bar.colors.subtext0
+                        wrapMode: Text.WordWrap
+                    }
+                    Rectangle {
+                        width: parent.width
+                        radius: bar.s(Theme.radiusLg)
+                        color: Theme.surfaceContainerLow
+                        border.width: 1
+                        border.color: Theme.outlineVariant
+                        height: coreCol.implicitHeight + bar.s(Theme.gapMd) * 2
+                        visible: root.liveBinds.length > 0
+
+                        ColumnLayout {
+                            id: coreCol
+                            x: bar.s(Theme.gapMd)
+                            y: bar.s(Theme.gapMd)
+                            width: parent.width - bar.s(Theme.gapMd) * 2
+                            spacing: bar.s(Theme.gapXs)
+
+                            Repeater {
+                                model: root.coreList
+                                delegate: RowLayout {
+                                    required property var modelData
+                                    Layout.fillWidth: true
+                                    spacing: bar.s(Theme.gapSm)
+
+                                    Rectangle {
+                                        Layout.alignment: Qt.AlignVCenter
+                                        radius: bar.s(Theme.radiusMd)
+                                        color: Theme.surfaceContainer
+                                        border.width: 1
+                                        border.color: Theme.outlineVariant
+                                        implicitWidth: coreKeyText.implicitWidth + bar.s(20)
+                                        implicitHeight: bar.s(24)
+                                        Text {
+                                            id: coreKeyText
+                                            anchors.centerIn: parent
+                                            text: modelData.key
+                                            font.family: "Hack Nerd Font"
+                                            font.pixelSize: bar.s(10)
+                                            color: bar.colors.text
+                                        }
+                                    }
+                                    Text {
+                                        Layout.fillWidth: true
+                                        Layout.alignment: Qt.AlignVCenter
+                                        text: modelData.action
+                                        font.family: "Hack Nerd Font"
+                                        font.pixelSize: bar.s(10)
+                                        color: bar.colors.subtext0
+                                        elide: Text.ElideRight
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    EditLabel {
+                        visible: root.liveBinds.length === 0
+                        bar: root.bar
+                        width: parent.width
+                        text: "The core bind list needs a running Hyprland session (hyprctl binds)."
                         font.pixelSize: bar.s(11)
                         color: bar.colors.subtext0
                         wrapMode: Text.WordWrap

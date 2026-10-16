@@ -92,6 +92,12 @@ check_lints() {
             rm -f "$tmpf"
         done < <(find "$d" -name '*.js')
     fi
+    # Plugin-local node tests (tests/*.test.js), run when present.
+    if command -v node >/dev/null 2>&1 && [ -d "$d/tests" ]; then
+        while IFS= read -r t; do
+            node "$t" >/dev/null 2>&1 || { bad "node test: $t"; ok=0; }
+        done < <(find "$d/tests" -name '*.test.js')
+    fi
     [ "$ok" = 1 ] && good "lints clean"
 }
 
