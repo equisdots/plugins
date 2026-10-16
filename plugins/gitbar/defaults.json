@@ -1,6 +1,7 @@
 {
   "gitbar": {
     "icon": "\udb80\udea2",
-    "interval": 5000
+    "interval": 5000,
+    "repo": ""
   }
 }

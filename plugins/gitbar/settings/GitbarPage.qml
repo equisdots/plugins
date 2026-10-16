@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.core
+import qs.ui.bar.edit
 
-// Git Bar settings (Plugins → Git Bar). Minimal: shows the bar module glyph.
+// Git Bar settings (Plugins → Git Bar).
 Item {
     id: page
     property var bar: null
@@ -13,26 +14,36 @@ Item {
         anchors.margins: Theme.gapLg
         spacing: Theme.gapMd
 
-        Text { text: "Git Bar"; font.family: "Hack Nerd Font"; font.bold: true; font.pixelSize: 20; color: Theme.text }
-        Text { text: "Current git branch and dirty-file count for the focused repo"; font.family: "Hack Nerd Font"; font.pixelSize: 11; color: Theme.subtext0; Layout.fillWidth: true; wrapMode: Text.WordWrap }
-
-        Rectangle {
+        ColumnLayout {
             Layout.fillWidth: true
-            radius: Theme.radiusLg
-            color: Theme.surfaceContainerLow
-            border.width: 1; border.color: Theme.outlineVariant
-            implicitHeight: inner.implicitHeight + Theme.gapLg * 2
-            ColumnLayout {
-                id: inner
-                anchors.fill: parent; anchors.margins: Theme.gapLg; spacing: Theme.gapSm
-                Text { text: "Glyph"; font.family: "Hack Nerd Font"; font.pixelSize: 12; color: Theme.text }
-                Text { text: "󰊢"; font.family: "Hack Nerd Font"; font.pixelSize: 18; color: Theme.mauve }
+            spacing: Theme.gapXs
+            Text { text: "Git Bar"; font.family: "Hack Nerd Font"; font.weight: Font.Black; font.pixelSize: 24; color: Theme.text }
+            Text {
+                Layout.fillWidth: true
+                text: "Shows the git status of a repository. Pin one below, or leave it empty to follow the focused window (best-effort)."
+                font.family: "Hack Nerd Font"; font.pixelSize: 11; color: Theme.subtext0; wrapMode: Text.WordWrap
             }
         }
+
+        FieldCard {
+            Layout.fillWidth: true
+            bar: page.bar
+            label: "Pinned repo"
+            placeholder: "auto (focused window)"
+            value: page.host ? (page.host.settings.get("repo", "") || "") : ""
+            onEdited: (text) => { if (page.host) page.host.settings.set("repo", text.trim()); }
+        }
+        Text {
+            Layout.fillWidth: true
+            text: "Empty = auto: the repo of the focused window (descends to the terminal's shell). Set a path to always show one repo."
+            font.family: "Hack Nerd Font"; font.pixelSize: 10; color: Theme.subtext0; wrapMode: Text.WordWrap
+        }
+
         PluginPositionRow {
             host: page.host
             Layout.fillWidth: true
         }
+
         Item { Layout.fillHeight: true }
     }
 }

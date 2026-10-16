@@ -1,39 +1,68 @@
 #!/usr/bin/env bash
 # gitbar — value producer for the Git Bar bar module.
 #
-# The interesting info is WHICH repo you are editing right now, so the producer
-# resolves the repo of the FOCUSED window (Hyprland active window pid →
-# /proc/<pid>/cwd → git toplevel), not the shell's own cwd (which never
-# changes). Falls back to $PWD then $HOME. Prints nothing when there is no
-# repo, and the bar module hides itself.
+# Two modes, in this order:
+#   1. PINNED repo   — settings.json `gitbar.repo` (a path). If set and it is a
+#                      git repo, that repo is always shown. This is the mode
+#                      that is useful for ANY user (their main repo).
+#   2. AUTO          — best-effort "what am I working on": the repo of the
+#                      FOCUSED window. A terminal focuses the emulator (whose
+#                      own cwd is its launch dir), so we descend the process
+#                      tree (up to a few levels) to the shell child and use ITS
+#                      cwd. GUI editors report their launch dir, so AUTO is
+#                      inherently heuristic.
+# With nothing resolved the producer prints nothing and the module hides.
 #
 # Usage:
 #   gitbar.sh            one-line value for the bar module
 #   gitbar.sh --detail   JSON with repo/branch/dirty/ahead/behind/files/last
 set -uo pipefail
 
-repo_from_cwd() { git -C "$1" rev-parse --show-toplevel 2>/dev/null; }
+CFG="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/plugins/gitbar/settings.json"
+STATE="${XDG_RUNTIME_DIR:-/tmp}/gitbar-last-repo"
+
+repo_from_cwd() { [ -n "${1:-}" ] && git -C "$1" rev-parse --show-toplevel 2>/dev/null; }
 
 resolve_repo() {
-    local top="" pid cwd
-    if command -v hyprctl >/dev/null 2>&1; then
-        pid="$(hyprctl activewindow -j 2>/dev/null | jq -r '.pid // empty' 2>/dev/null)"
-        if [ -n "${pid:-}" ] && [ "$pid" != "0" ]; then
-            cwd="$(readlink -f "/proc/$pid/cwd" 2>/dev/null || true)"
-            [ -n "$cwd" ] && top="$(repo_from_cwd "$cwd")"
+    local t
+    # 1) pinned repo (settings)
+    if [ -f "$CFG" ] && command -v jq >/dev/null 2>&1; then
+        local r; r="$(jq -r '.gitbar.repo // empty' "$CFG" 2>/dev/null)"
+        if [ -n "$r" ]; then
+            t="$(repo_from_cwd "$r")"; [ -n "$t" ] && { printf '%s' "$t"; return; }
         fi
     fi
-    if [ -z "$top" ]; then
-        local p
-        for p in "$PWD" "$HOME"; do
-            top="$(repo_from_cwd "$p")"; [ -n "$top" ] && break
-        done
+    # 2) auto: focused window cwd, then its SHELL descendants (terminal)
+    if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
+        local pid; pid="$(hyprctl activewindow -j 2>/dev/null | jq -r '.pid // empty' 2>/dev/null)"
+        if [ -n "${pid:-}" ] && [ "$pid" != "0" ]; then
+            t="$(repo_from_cwd "$(readlink -f "/proc/$pid/cwd" 2>/dev/null)")"
+            [ -n "$t" ] && { printf '%s' "$t"; return; }
+            # descend at most 2 levels and only into SHELL processes, so a
+            # background job (editor linter, agent, ...) can't hijack the island
+            local child g comm
+            for child in $(pgrep -P "$pid" 2>/dev/null); do
+                comm="$(cat "/proc/$child/comm" 2>/dev/null)"
+                case "$comm" in
+                    zsh|bash|fish|nu|nushell|dash|sh|ksh|elvish|xonsh|tcsh|csh|tssh|mksh)
+                        t="$(repo_from_cwd "$(readlink -f "/proc/$child/cwd" 2>/dev/null)")"
+                        [ -n "$t" ] && { printf '%s' "$t"; return; } ;;
+                esac
+                for g in $(pgrep -P "$child" 2>/dev/null); do
+                    comm="$(cat "/proc/$g/comm" 2>/dev/null)"
+                    case "$comm" in
+                        zsh|bash|fish|nu|nushell|dash|sh|ksh|elvish|xonsh|tcsh|csh|mksh)
+                            t="$(repo_from_cwd "$(readlink -f "/proc/$g/cwd" 2>/dev/null)")"
+                            [ -n "$t" ] && { printf '%s' "$t"; return; } ;;
+                    esac
+                done
+            done
+        fi
     fi
-    printf '%s' "$top"
+    printf ''
 }
 
 top="$(resolve_repo)"
-STATE="${XDG_RUNTIME_DIR:-/tmp}/gitbar-last-repo"
 
 # ── detail mode (popup) ──────────────────────────────────────────────────────
 if [ "${1:-}" = "--detail" ]; then
