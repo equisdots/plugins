@@ -360,10 +360,20 @@ Changes to the standard:
    `shell` into `timex`** (which now owns its faces). Consumer rule lives in
    each consumer, never in the standard (same as `provides.bar.modules` /
    `provides.panels`).
-6. **Manifest-driven install (F1).** `dots plugins add|remove|available`
+8. **Manifest-driven install (F1).** `dots plugins add|remove|available`
    (resolve the registry source, fetch, deploy by convention, enable,
    compat-gated) plus the Available section in the Plugins page, fed by the
    registry copy `dots` deploys into the shell tree. The per-plugin Nyx deploy
    case is now the generic convention; during the experimental phase the hub
    and plugin sources track `branch/experimental`
    (`EQUISDOTS_PLUGIN_BRANCH` overrides).
+9. **Complete plugin bars.** `provides.bar.provider` lets a plugin ship a
+   **whole bar** (`{ comp, label?, icon? }`, comp relative to the plugin UI
+   root). The shell mounts it through `ui/PluginHosts.qml` exactly like a host
+   adapter (same handle injection, same `surfaces`/`frameObstacle`
+   contracts); the plugin's master switch owns it and its own settings page is
+   its menu. Managed plugins only (the comp lives in the shell tree so it can
+   import the core kit). The core bar stays independent behind its own
+   `bar.enabled` master switch, so a user picks which bar owns each screen
+   edge; plugin bars coexist on their own switches. POC fixture:
+   `plugins/hello-bar`.

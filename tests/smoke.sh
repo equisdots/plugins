@@ -83,7 +83,14 @@ check_lints() {
     fi
     while IFS= read -r f; do bash -n "$f" >/dev/null 2>&1 || { bad "bash -n: $f"; ok=0; }; done < <(find "$d" -name '*.sh')
     if command -v node >/dev/null 2>&1; then
-        while IFS= read -r f; do node --check "$f" >/dev/null 2>&1 || { bad "node --check: $f"; ok=0; }; done < <(find "$d" -name '*.js')
+        while IFS= read -r f; do
+            # QML JS modules may open with pragmas (".pragma library") that are
+            # not valid JS: strip leading pragma lines before node's check.
+            local tmpf; tmpf="$(mktemp --suffix=.js)"
+            sed '/^\.pragma /d' "$f" > "$tmpf"
+            node --check "$tmpf" >/dev/null 2>&1 || { bad "node --check: $f"; ok=0; }
+            rm -f "$tmpf"
+        done < <(find "$d" -name '*.js')
     fi
     [ "$ok" = 1 ] && good "lints clean"
 }

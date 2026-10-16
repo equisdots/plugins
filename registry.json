@@ -64,6 +64,14 @@
       "path": "plugins/hello"
     },
     {
+      "id": "hello-bar",
+      "name": "Hello Bar",
+      "author": "equisdots",
+      "description": "POC fixture: a minimal complete bar provided by a plugin",
+      "source": "equisdots/plugins",
+      "path": "plugins/hello-bar"
+    },
+    {
       "id": "dock",
       "name": "Dock",
       "author": "xscriptor",
