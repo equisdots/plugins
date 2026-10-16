@@ -45,17 +45,17 @@ PluginPopup {
 
         Text {
             Layout.fillWidth: true
-            text: root.hasRepo ? (root.info.branch || "detached") : "no repo"
+            text: root.hasRepo ? (root.info.branch || "detached") : "no project"
             font.family: "Hack Nerd Font"; font.pixelSize: 40; font.weight: Font.Black
             color: Theme.text
             elide: Text.ElideRight
         }
         Text {
             Layout.fillWidth: true
-            text: root.hasRepo ? root.info.repo : "No git repository under the focused window."
+            text: root.hasRepo ? root.info.repo : "No project opened. Focus a window inside a repository, or pin one in this plugin's settings."
             font.family: "Hack Nerd Font"; font.pixelSize: 10
             color: Theme.subtext0
-            elide: Text.ElideMiddle
+            wrapMode: Text.WordWrap
         }
 
         // stat chips
