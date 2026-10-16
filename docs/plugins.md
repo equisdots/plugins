@@ -401,3 +401,13 @@ Changes to the standard:
    `bar.enabled` master switch, so a user picks which bar owns each screen
    edge; plugin bars coexist on their own switches. POC fixture:
    `plugins/hello-bar`.
+10. **Plugin keybinds are editable surface data.** `mod.bind(key, dsp,
+    { label, id })` records every bind in `plugins-report.json` with a stable
+    `id`, the effective key and the default key; the label feeds the
+    `keybinds` editor and is forwarded to hyprctl as the bind description.
+    The hub's `keybinds` plugin (Plugins panel) shows every plugin's binds and
+    lets the user re-key or mute a single one — overrides live in the plugin's
+    **own** settings file (`<scope>.binds.<id>` = `"KEY"` | `false`) and the
+    loader applies them at evaluation time. **The plugin owns the action; the
+    user owns the key.** A disabled plugin keeps its last known binds visible
+    (`bindsCached`) so the editor shows what would come back before re-enabling.

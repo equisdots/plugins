@@ -72,6 +72,14 @@
       "path": "plugins/hello-bar"
     },
     {
+      "id": "keybinds",
+      "name": "Keybinds",
+      "author": "equisdots",
+      "description": "Plugin shortcuts: see every bind, change its key or mute a single one",
+      "source": "equisdots/plugins",
+      "path": "plugins/keybinds"
+    },
+    {
       "id": "dock",
       "name": "Dock",
       "author": "xscriptor",
