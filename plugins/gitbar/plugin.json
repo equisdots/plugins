@@ -3,7 +3,7 @@
   "name": "Git Bar",
   "version": "0.1.0",
   "author": "xscriptor",
-  "description": "Current git branch and dirty-file count for the focused repo",
+  "description": "Git status of the repo under the focused window (branch, dirty/ahead/behind). Click for files and last commit",
   "type": "shell",
   "compat": {
     "host": ">=1.0.0 <2.0.0"

@@ -15,6 +15,9 @@ ModulePill {
 
     accentRole: "color6"
 
+    // No repo under the focused window → nothing useful to show: hide the island.
+    visible: mod.value !== ""
+
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/gitbar/scripts/gitbar.sh"
 
     onClicked: Quickshell.execDetached(["bash", "-c",
