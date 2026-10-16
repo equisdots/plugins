@@ -1,0 +1,37 @@
+{
+  "id": "jsonview",
+  "name": "JSON",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Paste, pretty-print, minify and copy JSON (pure QML/JS)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "jsonview",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/JsonViewPage.qml",
+    "label": "JSON"
+  },
+  "provides": {
+    "panels": {
+      "json": {
+        "comp": "ui/JsonView.qml",
+        "w": 660,
+        "h": 580,
+        "label": "JSON"
+      }
+    }
+  }
+}

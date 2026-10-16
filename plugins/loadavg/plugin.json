@@ -1,0 +1,38 @@
+{
+  "id": "loadavg",
+  "name": "Load Average",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "1-minute load average",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "loadavg",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/LoadavgPage.qml",
+    "label": "Load Average",
+    "icon": "\udb81\udd1a"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "loadavg": {
+          "comp": "bar/Loadavg.qml",
+          "label": "Load Average",
+          "icon": "\udb81\udd1a"
+        }
+      }
+    }
+  }
+}

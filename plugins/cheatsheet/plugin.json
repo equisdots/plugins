@@ -1,0 +1,17 @@
+{
+  "id": "cheatsheet",
+  "name": "Keybind Cheatsheet",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Searchable cheat sheet of every active keybind (core + plugins)",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "log"] },
+  "scope": "cheatsheet",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/CheatsheetPage.qml", "label": "Cheatsheet", "icon": "" },
+  "provides": {
+    "panels": { "cheatsheet": { "comp": "ui/Cheatsheet.qml", "w": 760, "h": 640, "label": "Cheatsheet" } }
+  }
+}

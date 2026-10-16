@@ -1,0 +1,19 @@
+{
+  "id": "pomodoropanel",
+  "name": "Pomodoro",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Pomodoro timer panel: 25/5 work-break sessions writing the shared state file",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "pomodoropanel",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/PomodoroPanelPage.qml", "label": "Pomodoro", "icon": "\udb81\udd1b" },
+  "provides": {
+    "panels": {
+      "pomodoro": { "comp": "ui/PomodoroPanel.qml", "w": 440, "h": 440, "label": "Pomodoro" }
+    }
+  }
+}

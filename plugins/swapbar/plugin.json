@@ -1,0 +1,38 @@
+{
+  "id": "swapbar",
+  "name": "Swap",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Swap usage percentage",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "swapbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/SwapbarPage.qml",
+    "label": "Swap",
+    "icon": "\udb81\udcc5"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "swapbar": {
+          "comp": "bar/Swapbar.qml",
+          "label": "Swap",
+          "icon": "\udb81\udcc5"
+        }
+      }
+    }
+  }
+}

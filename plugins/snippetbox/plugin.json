@@ -1,0 +1,37 @@
+{
+  "id": "snippetbox",
+  "name": "Snippets",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Saved text snippets with clipboard copy and an inline add form",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "snippetbox",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/SnippetBoxPage.qml",
+    "label": "Snippets"
+  },
+  "provides": {
+    "panels": {
+      "snippets": {
+        "comp": "ui/SnippetBox.qml",
+        "w": 580,
+        "h": 540,
+        "label": "Snippets"
+      }
+    }
+  }
+}

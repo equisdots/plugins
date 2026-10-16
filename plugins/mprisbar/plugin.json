@@ -1,0 +1,38 @@
+{
+  "id": "mprisbar",
+  "name": "Media",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Now-playing artist - title (playerctl)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "mprisbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/MprisbarPage.qml",
+    "label": "Media",
+    "icon": "\udb81\udf5a"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "mprisbar": {
+          "comp": "bar/Mprisbar.qml",
+          "label": "Media",
+          "icon": "\udb81\udf5a"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "ghbar",
+  "name": "GitHub",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Unread GitHub notifications (gh CLI)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "ghbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/GhbarPage.qml",
+    "label": "GitHub",
+    "icon": "\udb80\udea4"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "ghbar": {
+          "comp": "bar/Ghbar.qml",
+          "label": "GitHub",
+          "icon": "\udb80\udea4"
+        }
+      }
+    }
+  }
+}

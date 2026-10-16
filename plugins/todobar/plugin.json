@@ -1,0 +1,38 @@
+{
+  "id": "todobar",
+  "name": "Todo",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Open items in the quicknotes todo file",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "todobar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/TodobarPage.qml",
+    "label": "Todo",
+    "icon": "\udb80\udd32"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "todobar": {
+          "comp": "bar/Todobar.qml",
+          "label": "Todo",
+          "icon": "\udb80\udd32"
+        }
+      }
+    }
+  }
+}

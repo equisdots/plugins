@@ -1,0 +1,10 @@
+{
+  "bookmarks": {
+    "links": [
+      { "label": "GitHub", "url": "https://github.com" },
+      { "label": "Hyprland Wiki", "url": "https://wiki.hypr.land" },
+      { "label": "Quickshell Docs", "url": "https://quickshell.org/docs" },
+      { "label": "Arch Wiki", "url": "https://wiki.archlinux.org" }
+    ]
+  }
+}

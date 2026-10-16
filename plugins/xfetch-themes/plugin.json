@@ -1,0 +1,17 @@
+{
+  "id": "xfetch-themes",
+  "name": "XFetch Themes",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Browse and apply xfetch terminal themes (~/.config/xfetch/themes) from a shell popup",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "xfetch-themes",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/XfetchThemesPage.qml", "label": "XFetch Themes", "icon": "" },
+  "provides": {
+    "panels": { "xfetch-themes": { "comp": "ui/XfetchThemes.qml", "w": 560, "h": 600, "label": "XFetch Themes" } }
+  }
+}

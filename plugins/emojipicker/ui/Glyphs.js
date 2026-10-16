@@ -1,0 +1,160 @@
+.pragma library
+
+// Glyph catalogue for the Glyphs (emojipicker) panel.
+//
+// Pure QML-side data: a flat list of { g, tags }. `g` is the literal Unicode
+// character that gets copied to the clipboard; `tags` is a space-separated,
+// lowercase keyword string the search field matches against. No network and no
+// scripts are involved — the panel filters this array in JavaScript.
+var GLYPHS = [
+    // Arrows
+    { g: "→", tags: "arrow right direction next forward" },
+    { g: "←", tags: "arrow left direction back previous" },
+    { g: "↑", tags: "arrow up direction rise increase" },
+    { g: "↓", tags: "arrow down direction fall decrease" },
+    { g: "↔", tags: "arrow left right horizontal both ways" },
+    { g: "⇄", tags: "arrow swap exchange left right" },
+    { g: "⇒", tags: "arrow double right implies then" },
+    { g: "↵", tags: "return enter newline line break" },
+    { g: "↺", tags: "arrow undo rotate counterclockwise reset" },
+    { g: "↻", tags: "arrow redo rotate clockwise reload" },
+    { g: "⟳", tags: "arrow refresh reload sync rotate" },
+    { g: "↖", tags: "arrow up left northwest" },
+    { g: "↗", tags: "arrow up right northeast" },
+    { g: "↘", tags: "arrow down right southeast" },
+    { g: "↙", tags: "arrow down left southwest" },
+
+    // Punctuation & typography
+    { g: "—", tags: "dash em punctuation line long" },
+    { g: "–", tags: "dash en punctuation line" },
+    { g: "…", tags: "ellipsis dots punctuation continuation" },
+    { g: "•", tags: "bullet dot punctuation list" },
+    { g: "‣", tags: "bullet triangle punctuation list" },
+    { g: "◦", tags: "bullet small circle punctuation list" },
+    { g: "§", tags: "section sign paragraph law" },
+    { g: "¶", tags: "pilcrow paragraph mark" },
+    { g: "¿", tags: "inverted question mark spanish" },
+    { g: "¡", tags: "inverted exclamation mark spanish" },
+    { g: "«", tags: "guillemet left quote angle" },
+    { g: "»", tags: "guillemet right quote angle" },
+    { g: "“", tags: "quote left double curly typography" },
+    { g: "”", tags: "quote right double curly typography" },
+    { g: "‘", tags: "quote left single curly typography" },
+    { g: "’", tags: "quote right single apostrophe curly typography" },
+
+    // Check & status
+    { g: "✓", tags: "check tick done ok yes correct" },
+    { g: "✔", tags: "check heavy tick done ok yes" },
+    { g: "✗", tags: "cross x no fail wrong" },
+    { g: "✘", tags: "cross heavy x no fail wrong" },
+    { g: "✕", tags: "cross multiply x close" },
+    { g: "●", tags: "circle filled dot status bullet" },
+    { g: "○", tags: "circle hollow ring status bullet" },
+    { g: "◐", tags: "circle half left progress" },
+    { g: "◑", tags: "circle half right progress" },
+    { g: "◒", tags: "circle half bottom progress" },
+    { g: "◓", tags: "circle half top progress" },
+    { g: "⬤", tags: "circle large filled dot" },
+    { g: "✅", tags: "check mark button good done yes" },
+    { g: "❌", tags: "cross mark button bad no wrong" },
+    { g: "⚠", tags: "warning sign alert caution attention" },
+    { g: "ℹ", tags: "information info notice about" },
+
+    // Stars & sparkles
+    { g: "★", tags: "star filled favourite rating" },
+    { g: "☆", tags: "star hollow outline favourite rating" },
+    { g: "✦", tags: "star four points sparkle" },
+    { g: "✧", tags: "star four points outline sparkle" },
+    { g: "✨", tags: "sparkles shine magic" },
+    { g: "✩", tags: "star outlined rating" },
+    { g: "✪", tags: "star circled rating" },
+    { g: "⭐", tags: "star rating favourite gold" },
+
+    // Shapes
+    { g: "■", tags: "square filled block shape" },
+    { g: "□", tags: "square hollow outline shape" },
+    { g: "▪", tags: "square small filled bullet" },
+    { g: "▫", tags: "square small hollow outline" },
+    { g: "▲", tags: "triangle up shape arrow" },
+    { g: "▼", tags: "triangle down shape arrow" },
+    { g: "►", tags: "triangle right play shape" },
+    { g: "◄", tags: "triangle left shape" },
+    { g: "◆", tags: "diamond filled shape" },
+    { g: "◇", tags: "diamond hollow outline shape" },
+    { g: "◈", tags: "diamond small shape" },
+    { g: "░", tags: "shade light block fill pattern" },
+
+    // Hearts
+    { g: "♥", tags: "heart filled suit love" },
+    { g: "♡", tags: "heart hollow suit love" },
+    { g: "❤", tags: "heart red love" },
+    { g: "🧡", tags: "heart orange love" },
+    { g: "💛", tags: "heart yellow love" },
+    { g: "💚", tags: "heart green love" },
+    { g: "💙", tags: "heart blue love" },
+    { g: "💜", tags: "heart purple love" },
+
+    // Tech & UI
+    { g: "⌘", tags: "command cmd meta key mac" },
+    { g: "⌥", tags: "option alt key" },
+    { g: "⌃", tags: "control ctrl key" },
+    { g: "⇧", tags: "shift key arrow" },
+    { g: "⌫", tags: "backspace delete key erase" },
+    { g: "⌦", tags: "delete forward key erase" },
+    { g: "⎋", tags: "escape esc key" },
+    { g: "⏎", tags: "return enter key" },
+    { g: "⌛", tags: "hourglass done time wait" },
+    { g: "⏳", tags: "hourglass waiting time progress" },
+    { g: "☰", tags: "menu hamburger lines list" },
+    { g: "⚙", tags: "gear settings cog preferences" },
+    { g: "🔍", tags: "magnifier search zoom find" },
+    { g: "🔒", tags: "lock closed secure private" },
+    { g: "🔓", tags: "lock open unlocked insecure" },
+    { g: "🔑", tags: "key password access" },
+    { g: "🗑", tags: "trash delete bin remove" },
+    { g: "📁", tags: "folder directory files" },
+    { g: "📄", tags: "document page file" },
+    { g: "📋", tags: "clipboard copy paste list" },
+    { g: "✂", tags: "scissors cut trim" },
+    { g: "✎", tags: "pencil edit write compose" },
+
+    // Currency
+    { g: "$", tags: "dollar usd money currency" },
+    { g: "€", tags: "euro money currency" },
+    { g: "£", tags: "pound sterling money currency" },
+    { g: "¥", tags: "yen yuan money currency" },
+    { g: "₿", tags: "bitcoin btc crypto money currency" },
+    { g: "₹", tags: "rupee money currency" },
+    { g: "₽", tags: "ruble money currency" },
+    { g: "₩", tags: "won money currency" },
+
+    // Weather & nature
+    { g: "☀", tags: "sun sunny clear weather" },
+    { g: "☁", tags: "cloud cloudy weather" },
+    { g: "☂", tags: "umbrella rain weather" },
+    { g: "☃", tags: "snowman snow winter weather" },
+    { g: "❄", tags: "snowflake cold winter weather" },
+    { g: "⚡", tags: "bolt lightning high voltage power" },
+    { g: "🔥", tags: "fire flame hot burn" },
+    { g: "🌊", tags: "wave water ocean sea" },
+    { g: "🌙", tags: "moon night crescent sleep" },
+    { g: "🌡", tags: "thermometer temperature heat" },
+
+    // Hands
+    { g: "👍", tags: "thumbs up like good approve" },
+    { g: "👎", tags: "thumbs down dislike bad reject" },
+    { g: "👌", tags: "ok hand perfect agree" },
+    { g: "✌", tags: "victory peace hand" },
+    { g: "🤞", tags: "fingers crossed luck hope" },
+    { g: "✊", tags: "fist raised power" },
+    { g: "👋", tags: "wave hello bye hand" },
+    { g: "🙏", tags: "pray thanks please hands" },
+
+    // Food
+    { g: "☕", tags: "coffee cup drink hot" },
+    { g: "🍵", tags: "tea cup drink hot" },
+    { g: "🍺", tags: "beer drink mug" },
+    { g: "🍕", tags: "pizza food slice" },
+    { g: "🍎", tags: "apple fruit food" },
+    { g: "🍰", tags: "cake dessert food sweet" }
+];

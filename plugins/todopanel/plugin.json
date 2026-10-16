@@ -1,0 +1,19 @@
+{
+  "id": "todopanel",
+  "name": "Todo",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Task list panel backed by ~/.local/share/equisdots/todo.txt (add, toggle, delete)",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "todopanel",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/TodoPanelPage.qml", "label": "Todo", "icon": "\udb80\udd32" },
+  "provides": {
+    "panels": {
+      "todo": { "comp": "ui/TodoPanel.qml", "w": 500, "h": 580, "label": "Todo" }
+    }
+  }
+}

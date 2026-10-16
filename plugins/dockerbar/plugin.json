@@ -1,0 +1,38 @@
+{
+  "id": "dockerbar",
+  "name": "Docker",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Running Docker containers count",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "dockerbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/DockerbarPage.qml",
+    "label": "Docker",
+    "icon": "\udb82\udc68"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "dockerbar": {
+          "comp": "bar/Dockerbar.qml",
+          "label": "Docker",
+          "icon": "\udb82\udc68"
+        }
+      }
+    }
+  }
+}

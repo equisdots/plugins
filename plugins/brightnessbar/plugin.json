@@ -1,0 +1,38 @@
+{
+  "id": "brightnessbar",
+  "name": "Brightness",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Screen brightness percentage",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "brightnessbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/BrightnessbarPage.qml",
+    "label": "Brightness",
+    "icon": "\udb80\udcde"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "brightnessbar": {
+          "comp": "bar/Brightnessbar.qml",
+          "label": "Brightness",
+          "icon": "\udb80\udcde"
+        }
+      }
+    }
+  }
+}

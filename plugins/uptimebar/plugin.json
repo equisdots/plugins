@@ -1,0 +1,38 @@
+{
+  "id": "uptimebar",
+  "name": "Uptime",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "System uptime (human)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "uptimebar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/UptimebarPage.qml",
+    "label": "Uptime",
+    "icon": "\udb80\udd50"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "uptimebar": {
+          "comp": "bar/Uptimebar.qml",
+          "label": "Uptime",
+          "icon": "\udb80\udd50"
+        }
+      }
+    }
+  }
+}

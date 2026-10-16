@@ -1,0 +1,38 @@
+{
+  "id": "cryptobar",
+  "name": "Crypto",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Bitcoin price in USD (CoinGecko)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "cryptobar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/CryptobarPage.qml",
+    "label": "Crypto",
+    "icon": "\udb82\udc13"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "cryptobar": {
+          "comp": "bar/Cryptobar.qml",
+          "label": "Crypto",
+          "icon": "\udb82\udc13"
+        }
+      }
+    }
+  }
+}

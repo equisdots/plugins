@@ -1,0 +1,37 @@
+{
+  "id": "processmanager",
+  "name": "Processes",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Top processes by CPU with per-row kill and live totals",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "processmanager",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/ProcessManagerPage.qml",
+    "label": "Processes"
+  },
+  "provides": {
+    "panels": {
+      "procman": {
+        "comp": "ui/ProcessManager.qml",
+        "w": 760,
+        "h": 620,
+        "label": "Processes"
+      }
+    }
+  }
+}

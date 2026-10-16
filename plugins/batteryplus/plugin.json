@@ -1,0 +1,38 @@
+{
+  "id": "batteryplus",
+  "name": "Battery Plus",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Battery charge and status",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "batteryplus",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/BatteryplusPage.qml",
+    "label": "Battery Plus",
+    "icon": "\udb80\udc79"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "batteryplus": {
+          "comp": "bar/Batteryplus.qml",
+          "label": "Battery Plus",
+          "icon": "\udb80\udc79"
+        }
+      }
+    }
+  }
+}

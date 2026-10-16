@@ -1,0 +1,37 @@
+{
+  "id": "colorpicker",
+  "name": "Color Picker",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Colour picker (hyprpicker) with the last 12 picks as copyable swatches",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "colorpicker",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/ColorPickerPage.qml",
+    "label": "Color Picker"
+  },
+  "provides": {
+    "panels": {
+      "colors": {
+        "comp": "ui/ColorPicker.qml",
+        "w": 560,
+        "h": 480,
+        "label": "Color Picker"
+      }
+    }
+  }
+}

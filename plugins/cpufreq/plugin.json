@@ -1,0 +1,38 @@
+{
+  "id": "cpufreq",
+  "name": "CPU Frequency",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Average CPU frequency in MHz",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "cpufreq",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/CpufreqPage.qml",
+    "label": "CPU Frequency",
+    "icon": "\udb83\udee0"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "cpufreq": {
+          "comp": "bar/Cpufreq.qml",
+          "label": "CPU Frequency",
+          "icon": "\udb83\udee0"
+        }
+      }
+    }
+  }
+}

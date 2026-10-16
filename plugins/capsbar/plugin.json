@@ -1,0 +1,38 @@
+{
+  "id": "capsbar",
+  "name": "Caps Lock",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Caps Lock indicator",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "capsbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/CapsbarPage.qml",
+    "label": "Caps Lock",
+    "icon": "\udb82\ude9b"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "capsbar": {
+          "comp": "bar/Capsbar.qml",
+          "label": "Caps Lock",
+          "icon": "\udb82\ude9b"
+        }
+      }
+    }
+  }
+}

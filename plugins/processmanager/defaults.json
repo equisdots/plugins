@@ -1,0 +1,6 @@
+{
+  "processmanager": {
+    "limit": 40,
+    "refreshMs": 2000
+  }
+}

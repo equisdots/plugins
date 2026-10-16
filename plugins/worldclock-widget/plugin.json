@@ -1,0 +1,45 @@
+{
+  "id": "worldclock-widget",
+  "name": "World Clock (Widget)",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Desktop widget: a second-timezone clock card",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "worldclock",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "worldclock": {
+          "name": "World Clock",
+          "icon": "\udb80\udd50",
+          "defaultWidth": 300,
+          "defaultHeight": 180,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/WorldclockCard.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        }
+      }
+    }
+  }
+}

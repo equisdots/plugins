@@ -1,0 +1,18 @@
+{
+  "snippetbox": {
+    "items": [
+      {
+        "label": "Signature",
+        "text": "Regards,\nXscriptor"
+      },
+      {
+        "label": "License header",
+        "text": "SPDX-License-Identifier: MIT"
+      },
+      {
+        "label": "Email",
+        "text": "xscriptor@example.com"
+      }
+    ]
+  }
+}

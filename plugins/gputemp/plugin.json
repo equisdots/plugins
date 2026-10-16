@@ -1,0 +1,38 @@
+{
+  "id": "gputemp",
+  "name": "GPU",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "GPU utilisation/temperature (nvidia-smi or sensors)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "gputemp",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/GputempPage.qml",
+    "label": "GPU",
+    "icon": "\udb82\udcae"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "gputemp": {
+          "comp": "bar/Gputemp.qml",
+          "label": "GPU",
+          "icon": "\udb82\udcae"
+        }
+      }
+    }
+  }
+}

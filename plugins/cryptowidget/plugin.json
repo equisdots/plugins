@@ -1,0 +1,45 @@
+{
+  "id": "cryptowidget",
+  "name": "Crypto (Widget)",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Desktop widget: BTC / ETH price in USD with 24h change",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "cryptowidget",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "crypto": {
+          "name": "Crypto",
+          "icon": "\udb82\udc13",
+          "defaultWidth": 320,
+          "defaultHeight": 220,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/CryptoCard.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        }
+      }
+    }
+  }
+}

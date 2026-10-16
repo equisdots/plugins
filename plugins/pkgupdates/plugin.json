@@ -1,0 +1,38 @@
+{
+  "id": "pkgupdates",
+  "name": "Updates",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Pending package updates",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "pkgupdates",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/PkgupdatesPage.qml",
+    "label": "Updates",
+    "icon": "\udb81\udeb0"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "pkgupdates": {
+          "comp": "bar/Pkgupdates.qml",
+          "label": "Updates",
+          "icon": "\udb81\udeb0"
+        }
+      }
+    }
+  }
+}

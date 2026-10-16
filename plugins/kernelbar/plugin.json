@@ -1,0 +1,38 @@
+{
+  "id": "kernelbar",
+  "name": "Kernel",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Running kernel release",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "kernelbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/KernelbarPage.qml",
+    "label": "Kernel",
+    "icon": "\udb81\udc93"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "kernelbar": {
+          "comp": "bar/Kernelbar.qml",
+          "label": "Kernel",
+          "icon": "\udb81\udc93"
+        }
+      }
+    }
+  }
+}

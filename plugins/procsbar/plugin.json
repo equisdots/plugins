@@ -1,0 +1,38 @@
+{
+  "id": "procsbar",
+  "name": "Processes",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Running process count",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "procsbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/ProcsbarPage.qml",
+    "label": "Processes",
+    "icon": "\udb81\udc6e"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "procsbar": {
+          "comp": "bar/Procsbar.qml",
+          "label": "Processes",
+          "icon": "\udb81\udc6e"
+        }
+      }
+    }
+  }
+}

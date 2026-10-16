@@ -1,0 +1,45 @@
+{
+  "id": "todowidget",
+  "name": "Todo (Widget)",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Desktop widget: open items from the equisdots todo file",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "todowidget",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "todo": {
+          "name": "Todo",
+          "icon": "\udb80\udd32",
+          "defaultWidth": 360,
+          "defaultHeight": 260,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/TodoCard.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        }
+      }
+    }
+  }
+}

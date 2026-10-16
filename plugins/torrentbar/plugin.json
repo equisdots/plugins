@@ -1,0 +1,38 @@
+{
+  "id": "torrentbar",
+  "name": "Torrents",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Active torrent downloads (transmission remote)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "torrentbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/TorrentbarPage.qml",
+    "label": "Torrents",
+    "icon": "\udb80\ude08"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "torrentbar": {
+          "comp": "bar/Torrentbar.qml",
+          "label": "Torrents",
+          "icon": "\udb80\ude08"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "membar",
+  "name": "Memory",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "RAM usage percentage (shared SysData poller)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "membar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/MembarPage.qml",
+    "label": "Memory",
+    "icon": "\udb80\udf5b"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "membar": {
+          "comp": "bar/Membar.qml",
+          "label": "Memory",
+          "icon": "\udb80\udf5b"
+        }
+      }
+    }
+  }
+}
