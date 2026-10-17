@@ -494,6 +494,14 @@
       "description": "Browse and apply xfetch terminal themes (~/.config/xfetch/themes) from a shell popup",
       "source": "equisdots/plugins",
       "path": "plugins/xfetch-themes"
+    },
+    {
+      "id": "wallpaper-motion",
+      "name": "Wallpaper Motion",
+      "author": "xscriptor",
+      "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davincix",
+      "source": "equisdots/plugins",
+      "path": "plugins/wallpaper-motion"
     }
   ]
 }

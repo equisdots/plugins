@@ -1,0 +1,34 @@
+{
+  "id": "wallpaper-motion",
+  "name": "Wallpaper Motion",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davincix",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "wallpaper-motion",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/MotionPage.qml", "label": "Wallpaper Motion", "icon": "󰈆" },
+  "host": "host/Host.qml",
+  "provides": {
+    "bar": {
+      "modules": {
+        "wallpaper-motion": {
+          "comp": "bar/Motion.qml",
+          "label": "Wallpaper Motion",
+          "icon": "󰈆"
+        }
+      }
+    },
+    "panels": {
+      "wallpaper-motion": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 360,
+        "label": "Wallpaper Motion"
+      }
+    }
+  }
+}
