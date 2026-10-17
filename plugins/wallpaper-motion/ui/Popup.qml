@@ -14,8 +14,8 @@ PluginPopup {
     title: "Wallpaper Motion"
     subtitle: "Animated scene frame rate (xwww)"
     accent: Theme.color5
-    popupWidth: 460
-    popupHeight: 360
+    popupWidth: 500
+    popupHeight: 430
 
     readonly property string scriptPath: Quickshell.env("HOME") + "/.config/hypr/plugins/wallpaper-motion/scripts/motion.sh"
     readonly property var presets: [15, 24, 30, 45, 60]
@@ -41,6 +41,7 @@ PluginPopup {
     Timer { interval: 2000; running: true; repeat: true; triggeredOnStart: true; onTriggered: root.refresh() }
 
     ColumnLayout {
+        id: content
         anchors.fill: parent
         anchors.margins: Theme.gapLg
         spacing: Theme.gapMd
@@ -48,8 +49,9 @@ PluginPopup {
         Text {
             Layout.fillWidth: true
             text: root.current !== "" ? (root.current + " fps") : "static"
-            font.family: "Hack Nerd Font"; font.pixelSize: 42; font.weight: Font.Black
+            font.family: "Hack Nerd Font"; font.pixelSize: 40; font.weight: Font.Black
             color: Theme.text
+            elide: Text.ElideRight
         }
         Text {
             Layout.fillWidth: true
@@ -58,15 +60,21 @@ PluginPopup {
                   : "No animated scene is running. Pick a scene in the wallpaper picker; your rate applies automatically."
             font.family: "Hack Nerd Font"; font.pixelSize: 11; color: Theme.subtext0
             wrapMode: Text.WordWrap
+            lineHeight: 1.15
         }
 
         Text {
             Layout.fillWidth: true
+            Layout.topMargin: Theme.gapXs
             text: "Frame rate"
             font.family: "Hack Nerd Font"; font.weight: Font.Medium; font.pixelSize: 12
             color: Theme.text
         }
-        RowLayout {
+
+        // Flow so the presets wrap instead of overflowing the popup width.
+        Flow {
+            Layout.fillWidth: true
+            Layout.preferredHeight: implicitHeight
             spacing: Theme.gapSm
             Repeater {
                 model: root.presets
@@ -92,7 +100,12 @@ PluginPopup {
                     }
                 }
             }
-            Item { Layout.fillWidth: true }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: Theme.outlineVariant
         }
 
         Text {
@@ -100,6 +113,7 @@ PluginPopup {
             text: "davincix ships 15 fps. This changes the live scene and is remembered for the next scenes."
             font.family: "Hack Nerd Font"; font.pixelSize: 10; color: Theme.subtext0
             wrapMode: Text.WordWrap
+            lineHeight: 1.15
         }
 
         Item { Layout.fillHeight: true }
