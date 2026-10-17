@@ -1,0 +1,13 @@
+{
+  "samurai-bar": {
+    "height": 30,
+    "clockSeconds": true,
+    "showWorkspaces": true,
+    "showClock": true,
+    "showCpu": true,
+    "showMem": true,
+    "showTemp": true,
+    "showNet": true,
+    "showBattery": true
+  }
+}

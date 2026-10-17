@@ -1,0 +1,45 @@
+{
+  "id": "pomodorowidget",
+  "name": "Pomodoro (Widget)",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Desktop widget: pomodoro remaining time (state file driven)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "pomodorowidget",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "pomodoro": {
+          "name": "Pomodoro",
+          "icon": "\udb81\udd1b",
+          "defaultWidth": 320,
+          "defaultHeight": 220,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/PomodoroCard.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        }
+      }
+    }
+  }
+}

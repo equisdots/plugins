@@ -1,0 +1,37 @@
+{
+  "id": "unitconv",
+  "name": "Units",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Offline unit converter for length, mass, temperature, data and time",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "unitconv",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/UnitConvPage.qml",
+    "label": "Units"
+  },
+  "provides": {
+    "panels": {
+      "units": {
+        "comp": "ui/UnitConv.qml",
+        "w": 540,
+        "h": 500,
+        "label": "Units"
+      }
+    }
+  }
+}

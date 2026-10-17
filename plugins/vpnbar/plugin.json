@@ -1,0 +1,46 @@
+{
+  "id": "vpnbar",
+  "name": "VPN",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Active VPN/WireGuard interface",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "vpnbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/VpnbarPage.qml",
+    "label": "VPN",
+    "icon": "\udb81\udd82"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "vpnbar": {
+          "comp": "bar/Vpnbar.qml",
+          "label": "VPN",
+          "icon": "\udb81\udd82"
+        }
+      }
+    },
+    "panels": {
+      "vpnbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 260,
+        "label": "VPN"
+      }
+    }
+  }
+}

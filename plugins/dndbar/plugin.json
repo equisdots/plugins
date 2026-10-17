@@ -1,0 +1,46 @@
+{
+  "id": "dndbar",
+  "name": "Do Not Disturb",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Notification do-not-disturb state",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "dndbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/DndbarPage.qml",
+    "label": "Do Not Disturb",
+    "icon": "\udb80\udc9b"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "dndbar": {
+          "comp": "bar/Dndbar.qml",
+          "label": "Do Not Disturb",
+          "icon": "\udb80\udc9b"
+        }
+      }
+    },
+    "panels": {
+      "dndbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 260,
+        "label": "Do Not Disturb"
+      }
+    }
+  }
+}

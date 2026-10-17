@@ -1,0 +1,46 @@
+{
+  "id": "gitbar",
+  "name": "Git Bar",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Git status of the repo under the focused window (branch, dirty/ahead/behind). Click for files and last commit",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "gitbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/GitbarPage.qml",
+    "label": "Git Bar",
+    "icon": "\udb80\udea2"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "gitbar": {
+          "comp": "bar/Gitbar.qml",
+          "label": "Git Bar",
+          "icon": "\udb80\udea2"
+        }
+      }
+    },
+    "panels": {
+      "gitbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Git Bar"
+      }
+    }
+  }
+}

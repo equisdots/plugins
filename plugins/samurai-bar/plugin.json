@@ -1,0 +1,19 @@
+{
+  "id": "samurai-bar",
+  "name": "Samurai Bar",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Complete bar in the Samurai design language: monochrome, flat, typographic, information-dense, with its own redesigned widgets",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log", "stats"] },
+  "scope": "samurai-bar",
+  "defaults": "defaults.json",
+  "defaultEnabled": false,
+  "settings": { "page": "settings/SamuraiBarPage.qml", "label": "Samurai Bar", "icon": "" },
+  "provides": {
+    "bar": {
+      "provider": { "comp": "bar/SamuraiBar.qml", "label": "Samurai Bar", "icon": "" }
+    }
+  }
+}

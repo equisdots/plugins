@@ -1,0 +1,46 @@
+{
+  "id": "mailbar",
+  "name": "Mail",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Unread mail in the Maildir (mbsync/notmuch)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "mailbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/MailbarPage.qml",
+    "label": "Mail",
+    "icon": "\udb80\uddee"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "mailbar": {
+          "comp": "bar/Mailbar.qml",
+          "label": "Mail",
+          "icon": "\udb80\uddee"
+        }
+      }
+    },
+    "panels": {
+      "mailbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Mail"
+      }
+    }
+  }
+}

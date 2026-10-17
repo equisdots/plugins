@@ -1,0 +1,46 @@
+{
+  "id": "kbdlayout",
+  "name": "Keyboard Layout",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Active keyboard layout",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "kbdlayout",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/KbdlayoutPage.qml",
+    "label": "Keyboard Layout",
+    "icon": "\udb80\udf0c"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "kbdlayout": {
+          "comp": "bar/Kbdlayout.qml",
+          "label": "Keyboard Layout",
+          "icon": "\udb80\udf0c"
+        }
+      }
+    },
+    "panels": {
+      "kbdlayout": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Keyboard Layout"
+      }
+    }
+  }
+}

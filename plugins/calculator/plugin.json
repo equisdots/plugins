@@ -1,0 +1,19 @@
+{
+  "id": "calculator",
+  "name": "Calculator",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Keypad calculator with qalc evaluation, a safe fallback evaluator and history",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "calculator",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/CalculatorPage.qml", "label": "Calculator", "icon": "\uf1ec" },
+  "provides": {
+    "panels": {
+      "calculator": { "comp": "ui/Calculator.qml", "w": 520, "h": 600, "label": "Calculator" }
+    }
+  }
+}

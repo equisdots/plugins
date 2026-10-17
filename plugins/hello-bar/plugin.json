@@ -1,0 +1,17 @@
+{
+  "id": "hello-bar",
+  "name": "Hello Bar",
+  "version": "0.1.0",
+  "author": "equisdots",
+  "description": "POC fixture: a minimal complete bar provided by a plugin",
+  "type": "shell",
+  "scope": "hello-bar",
+  "defaults": "defaults.json",
+  "settings": { "page": "settings/HelloBarPage.qml", "label": "Hello Bar", "icon": "" },
+  "provides": {
+    "bar": {
+      "provider": { "comp": "bar/HelloBar.qml", "label": "Hello Bar", "icon": "" }
+    }
+  },
+  "defaultEnabled": false
+}

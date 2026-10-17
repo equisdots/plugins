@@ -1,0 +1,19 @@
+{
+  "id": "bookmarks",
+  "name": "Bookmarks",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Quick links panel backed by the plugin's own settings.json (open with xdg-open)",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "bookmarks",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/BookmarksPage.qml", "label": "Bookmarks", "icon": "\uf02e" },
+  "provides": {
+    "panels": {
+      "bookmarks": { "comp": "ui/Bookmarks.qml", "w": 560, "h": 560, "label": "Bookmarks" }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "id": "nightlight",
+  "name": "Night Light",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Hyprsunset temperature or off",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "nightlight",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/NightlightPage.qml",
+    "label": "Night Light",
+    "icon": "\udb81\udd0f"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "nightlight": {
+          "comp": "bar/Nightlight.qml",
+          "label": "Night Light",
+          "icon": "\udb81\udd0f"
+        }
+      }
+    },
+    "panels": {
+      "nightlight": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Night Light"
+      }
+    }
+  }
+}

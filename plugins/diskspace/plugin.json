@@ -1,0 +1,46 @@
+{
+  "id": "diskspace",
+  "name": "Disk Space",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Root filesystem usage percentage",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "diskspace",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/DiskspacePage.qml",
+    "label": "Disk Space",
+    "icon": "\udb80\udeca"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "diskspace": {
+          "comp": "bar/Diskspace.qml",
+          "label": "Disk Space",
+          "icon": "\udb80\udeca"
+        }
+      }
+    },
+    "panels": {
+      "diskspace": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Disk Space"
+      }
+    }
+  }
+}

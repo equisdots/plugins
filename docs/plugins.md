@@ -1,8 +1,9 @@
 # equisdots · Plugins — Standard v0
 
 > **Status: draft — POC implemented** (2026-10, `branch/experimental`). Nyx is
-> plugin #1; the shell ships the Plugins group (manager + per-plugin pages),
-> the Hyprland config runs the loader and `dots` has the `plugins` command.
+> plugin #1 and ships its **own settings page** (self-contained plugin UI);
+> the shell ships the Plugins group (manager + dynamic plugin pages), the
+> Hyprland config runs the loader and `dots` has the `plugins` command.
 > Scope: the Hyprland stack (`dots`, `hyprland`, `shell`, `nyx`, `plugins`).
 > niri is explicitly out of scope for this document.
 
@@ -25,9 +26,9 @@ Three states, deliberately separated:
 
 | State | Meaning | v0? |
 |---|---|---|
-| Installed | a manifest exists in a registry folder | ✅ yes |
-| Enabled | its switch in `settings.json` is true | ✅ yes |
-| Available | known in a registry/store, not installed | ❌ later phase |
+| Installed | a manifest exists in a registry folder | yes |
+| Enabled | its switch in `settings.json` is true | yes |
+| Available | known in a registry/store, not installed | later phase |
 
 ---
 
@@ -42,13 +43,40 @@ Discovery = any directory containing a `plugin.json`. The user folder is
 scanned first, so a user plugin with the same `id` shadows the managed one
 (same rule as Nyx species/cards).
 
-The registry folder holds the **manifest**; payload lives wherever the plugin
-needs it. A `hypr` plugin keeps its `hypr.lua` next to its manifest; a shell
-plugin's QML stays deployed by its own install path (e.g. Nyx keeps its QML at
-`ui/nyx/` — only its manifest lands in the registry).
+Deploy convention (managed plugins): the **whole repo** goes to the shell tree
+at `ui/plugins/<id>/` (the UI face: settings pages, host adapters, overlays,
+wrappers — Nyx's old `ui/nyx` path, generalized), and the **runtime subset**
+additionally goes
+to the registry `~/.config/hypr/plugins/<id>/`: the manifest (always), plus
+`hypr.lua` and `scripts/` when present (what the loader runs; `mod.script()`
+resolves there). Nyx needs no restructuring for this — its repo *is* its UI.
 
-`plugins/` is the **installed registry**, not necessarily where the code
-lives. This keeps discovery cheap and unambiguous.
+`plugins/` is the **installed registry** (discovery + the compositor side);
+the shell-tree copy is what Quickshell loads.
+
+### Identity & collisions
+
+`plugin.json → id` is the plugin's identity: stable, globally unique, and
+the folder name must match it. Duplicates are prevented locally — no CI
+involved — at every gate where an id can enter the system:
+
+- **authoring** — the hub's smoke harness (`tests/smoke.sh`) rejects
+  duplicate ids across the concentration folder, duplicate or broken registry
+  entries, hub-local entries that do not resolve to a folder with the
+  matching id, and hub plugins missing from the registry;
+- **install** — `dots` refuses a registry with duplicate ids and verifies the
+  fetched manifest declares exactly the requested id before deploying;
+- **runtime** — collisions are never resolved silently: the shell's scan
+  keeps the user-first winner and lists every shadowed copy under `shadowed`
+  (plus a `dirMismatch` flag when a folder name does not match its manifest),
+  the Hyprland loader records losing directories as `status: "collision"` in
+  `plugins-report.json`, the Plugins manager shows a warning on the affected
+  card, and `dots doctor` reports registry duplicates, folder mismatches and
+  runtime collisions.
+
+User plugins shadowing managed ones (the same id in both registry folders) is
+a by-design precedence rule — the point is that a duplicate can only happen
+*visibly*.
 
 ---
 
@@ -64,21 +92,25 @@ lives. This keeps discovery cheap and unambiguous.
   "type": "shell",
   "compat": { "shell": ">=0.1.0" },
   "toggle": "mascots.enabled",
-  "settingsTab": "mascots"
+  "settings": { "page": "settings/NyxPage.qml", "label": "Nyx" }
 }
 ```
 
 | Field | Required | Type | Notes |
 |---|---|---|---|
-| `id` | ✅ | slug | stable; used in settings keys, folder names and the CLI |
-| `name` | ✅ | string | display name |
-| `version` | ✅ | semver | `"0.1.0"` |
-| `author` | ✅ | string | `"equisdots"` or a user handle |
-| `description` | ✅ | string | one line, shown on the plugin card |
-| `type` | ✅ | `shell` \| `hypr` \| `mixed` \| `cli` | badge + payload expectations |
+| `id` | yes | slug | stable; used in settings keys, folder names and the CLI |
+| `name` | yes | string | display name |
+| `version` | yes | semver | `"0.1.0"` |
+| `author` | yes | string | `"equisdots"` or a user handle |
+| `description` | yes | string | one line, shown on the plugin card |
+| `type` | yes | `shell` \| `hypr` \| `mixed` \| `cli` | badge + payload expectations |
 | `compat` | — | object | `{ "hyprland": ">=0.55", "shell": ">=0.1.0" }` — informational in v0, enforced by `dots doctor` in F1 |
 | `toggle` | — | settings path | where the enable switch lives; default: `plugins.<id>.enabled` |
-| `settingsTab` | — | string | id of an existing shell settings tab — renders the "Configure" button on the card |
+| `settings` | — | object | the plugin ships its own settings page: `{ page, label?, icon? }`. `page` is a QML file in the repo, deployed with the UI to `ui/plugins/<id>/`; it appears in the Plugins group as `p_<id>` and Configure opens it (see §6) |
+| `settingsTab` | — | string | legacy: id of an existing shell settings tab (pre `settings.page`) |
+| `host` | — | string | managed plugins only: a QML host adapter (path relative to the plugin UI root) the shell mounts generically (`ui/PluginHosts.qml`). It runs inside the shell tree and may import the core kit; used for always-on UI (overlays, surfaces). Hosts may publish `frameObstacle` rects for the screen frame |
+| `standalone` | — | string[] | managed plugins only: QML entries that run as their own Quickshell instance (paths relative to the plugin UI root). `dots` generates a root-level launcher per entry (`plugin-<id>-<basename>.qml`, importing the entry's directory) so it runs with the shell tree as the config root and can import the core kit; the plugin's own script launches that launcher |
+| `provides` | — | object | free-form contributions passed through untouched by the hosts and interpreted by consumers — never by this standard. Namespace keys by consumer (`"<consumer>": { ... }`) to avoid collisions |
 | `defaultEnabled` | — | bool (default `false`) | effective state when no switch exists in `settings.json` yet |
 
 Minimal `hypr` example (the POC fixture):
@@ -102,6 +134,10 @@ Minimal `hypr` example (the POC fixture):
 - **Key**: `plugins.<id>.enabled` by default. A plugin that already has its own
   master switch declares it in `toggle` (Nyx → `mascots.enabled`), so the
   plugin card never duplicates an existing switch.
+- **Config menu**: `plugins.<id>.config` (bool, default `true`) — whether the
+  plugin's settings page appears in the Plugins group. The manager card shows
+  both switches; the master switch hides the page regardless, so everything
+  the plugin owns follows it.
 - **Written by**: the shell Plugins page and `dots plugins enable|disable <id>`
   — atomically, following the existing `settings.json` contract. Plugins never
   write their own enable state.
@@ -131,7 +167,8 @@ prints a JSON array sorted by `name`:
     "type": "shell",
     "toggle": "mascots.enabled",
     "enabled": false,
-    "settingsTab": "mascots",
+    "config": true,
+    "settings": { "page": "settings/NyxPage.qml", "label": "Nyx" },
     "_base": "/home/user/.config/hypr/plugins/nyx"
   }
 ]
@@ -140,6 +177,9 @@ prints a JSON array sorted by `name`:
 Consumers: the shell **Plugins group** (manager page + per-plugin pages),
 `dots plugins`, and (later) an xturing tab. One implementation, three
 surfaces.
+
+Hosts pass manifest fields through untouched (e.g. `provides`), so consumers
+implement their own contribution rules without changes to this standard.
 
 ---
 
@@ -172,21 +212,83 @@ mod.bind("SUPER + SHIFT + H", hl.dsp.exec_cmd("notify-send 'Hello from a plugin'
 
 ---
 
-## 6. `dots` CLI (v0 minimum)
+## 6. Plugin settings pages (own config menu)
 
-- `dots plugins` — table of installed plugins from the scan: id, name, version,
-  type, enabled.
-- `dots plugins enable|disable <id>` — writes the effective toggle and calls
-  `reload.sh`.
+A plugin that declares `settings.page` ships **its own configuration UI**; the
+shell wires it dynamically:
 
-Deploy in v0: Nyx's manifest is placed in `~/.config/hypr/plugins/nyx/` by its
-existing deploy step (one line). **Manifest-driven deploy** (`add`/`remove`/
-`doctor`) is F1; the POC fixture installs by simply copying its folder into
-`plugins-user/hello/` — proving user plugins need zero `dots` changes.
+- **Deploy**: `dots` copies the whole plugin into the shell tree at
+  `ui/plugins/<id>/` (the Nyx precedent, generalized from the old `ui/nyx`);
+  the runtime subset (`plugin.json`, `hypr.lua`, `scripts/`) also lands in the
+  registry (see §1).
+- **Nav**: `EditorNav.withPlugins()` appends one item per plugin with a
+  settings page — id `p_<id>`, `label`/`icon` from the manifest — but only
+  while the plugin is enabled and its config menu is on (§3); the item stays
+  hideable/orderable through `settings.editor` like any other.
+- **Load**: the editor loads the page on demand
+  (`ui/plugins/<id>/<settings.page>`) with the same contract as its own
+  pages: the QML root receives the editor as an initial property
+  (`property var bar`) — `bar.s()`, `bar.colors`, `bar.gotoPage()`.
+- **Kit imports**: at the deployed path, the shell's shared editor kit and
+  core singletons resolve as `../../../bar/edit` and `../../../../core`.
+  Managed pages live in the shell tree so these resolve; **user** plugins
+  (`plugins-user/`) load their page via `file://` from their own folder, so
+  their page must be self-contained QML (no shell-kit imports). A public kit
+  path or an injected host API is a v0.2 item (open question §10.6).
+- Nyx is the first adopter: `settings/NyxPage.qml` — the whole mascot/island
+  menu moved into the plugin repo; the shell no longer owns that page.
 
 ---
 
-## 7. POC acceptance criteria
+## 7. `dots` CLI
+
+- `dots plugins` — table of installed plugins from the scan: id, name, version,
+  type, state, compat.
+- `dots plugins available` — the install registry: every known plugin with its
+  source and `installed`/`available` state.
+- `dots plugins add <id> [--no-enable] [--force]` — manifest-driven deploy:
+  resolve `source` (+ `path`) in `registry.json`, fetch the repo, deploy by
+  the convention in §6 (whole plugin → shell tree; runtime subset → registry),
+  enable it and reload Hyprland. A violated `compat` refuses the install
+  (`--force` overrides); unverifiable ranges only warn.
+- `dots plugins remove <id>` — removes the managed copies (registry + UI),
+  switches the toggle off and reloads. User plugins (`plugins-user/`) are not
+  managed by dots and are refused.
+- `dots plugins enable|disable <id>` — writes the effective toggle and
+  reloads Hyprland (`hyprctl reload`).
+
+Nyx ships with the stack: `dots install` deploys any repo whose root carries a
+`plugin.json` through the same generic convention (no per-plugin cases). The
+POC fixture still installs by simply copying its folder into
+`plugins-user/hello/` — user plugins need zero `dots` changes.
+
+### Registry (install-time index)
+
+`registry.json` (repo root) lists every known plugin and where it comes from —
+this repo, `equisdots/nyx`, or any external repo. The installed scan never
+reads it (installed plugins are discovered by folder scan, §4); it is the
+**install-time source list** for `dots plugins add <id>`, and `dots` deploys a
+copy into the shell tree (`plugins-registry.json`) that feeds the Available
+section of the Plugins page (available vs. installed).
+
+| Field | Req | Notes |
+|---|---|---|
+| `version` | yes | registry schema version (currently `1`) |
+| `plugins[].id` | yes | must match the plugin's `plugin.json → id` |
+| `plugins[].source` | yes | `owner/repo` |
+| `plugins[].path` | no | subdirectory when one repo hosts several plugins; absent = the repo root is the plugin |
+| `plugins[].name` / `.author` / `.description` | no | display hints for listings (the manifest stays the source of truth) |
+
+```json
+{ "version": 1, "plugins": [
+  { "id": "nyx", "source": "equisdots/nyx" },
+  { "id": "screenshots", "source": "equisdots/plugins", "path": "plugins/screenshots" }
+] }
+```
+
+---
+
+## 8. POC acceptance criteria
 
 Acceptance criteria (parse-level checks verified in this environment; the
 live-session checks run on real hardware):
@@ -197,34 +299,118 @@ live-session checks run on real hardware):
 2. **Fault isolation**: a deliberately broken plugin loads → session keeps
    running, error recorded in `plugins-report.json`.
 3. **Nyx**: appears as a `shell` plugin; its toggle **is** `mascots.enabled`
-   (identical to the Mascots page switch); "Configure" opens the Mascots tab.
+   (identical to its Mascots page switch); "Configure" opens the plugin's own
+   page (dynamic `p_nyx`, loaded from `ui/plugins/nyx/`).
 4. **Green checks**: `luac -p` / `luacheck` / `Hyprland --verify-config` /
    `qmllint` / the repos' `scripts/check.sh`.
 5. **Visual**: the Plugins page renders live with both plugins listed.
 
 ---
 
-## 8. Non-goals (v0)
+## 9. Non-goals (v0)
 
-- Store / registry of *available* plugins.
-- `dots plugins add|remove`, version updates, `doctor` enforcement.
+- ~~Store / registry of *available* plugins~~ — landed (F1): `dots plugins
+  available` plus the Available section in the Plugins page.
+- ~~`dots plugins add|remove`~~ — landed; version updates and `doctor`
+  release-gating remain future work.
 - xturing Plugins tab, error badges on the page, keybind editor.
-- Generic shell-UI deploy (v1: shell payload conventions).
+- A public plugin UI kit (v0.1 pages import the shell kit via deployed
+  relative paths).
 - Anything niri.
 
 ---
 
-## 9. Open questions (for review)
+## 10. Open questions (for review)
 
-1. **`defaultEnabled`** semantics for future extractions (e.g. when
-   `screenshots` becomes a plugin, existing users must not lose their binds
-   silently — migration policy).
+1. ~~**`defaultEnabled`** semantics for future extractions~~ — **decided**:
+   `dots` keeps a `DEFAULT_PLUGINS` list and deploys those through the
+   registry convention on every install/update without writing a toggle, so
+   `defaultEnabled` keeps existing users whole (the `screenshots` cutover is
+   the first case).
 2. **Duplicate binds across plugins** — policy: last loaded wins vs. detected
    and reported.
 3. ~~Where the Plugins page lives~~ — **decided**: a Plugins group in the
-   settings panel (manager page `d_plugins` + the plugin's own page, e.g.
-   `d_nyx`; `plugin.json → settingsTab` points at it).
+   settings panel (manager page `d_plugins` + one dynamic page per plugin,
+   `p_<id>`, from `plugin.json → settings.page`).
 4. Naming: `plugins/` + `plugin.json` + "Plugins" group — confirm, or rename
    (extensions? modules?).
-5. ~~Fixture home~~ — **decided**: `samples/` in this repo; converted plugins
-   live in `converted/` while being extracted.
+5. ~~Fixture home~~ — **decided**: every plugin concentrates in this repo's
+   `plugins/` folder (one folder per plugin, any origin); `_template/` is the
+   scaffold; external plugins keep their own repos and are referenced.
+6. **Plugin UI kit**: v0.1 pages import the shell's editor kit by deployed
+   relative path (`../../../bar/edit`, `../../../../core`). Options for v0.2:
+   a stable public kit directory (`ui/sdk/`) vs. an injected host API (no
+   imports — the Nyx overlay philosophy applied to settings pages).
+
+---
+
+## v1 changes (`branch/experimental`)
+
+The plugin *interface* moved out of this repo into two dedicated repositories:
+
+- **`equisdots/plugin-api`** — the normative contract: `plugin.json` schema,
+  the host API version (`plugin-api.json`), the compat/versioning spec, and the
+  bash + Lua semver evaluators (drift-guarded by shared vectors).
+- **`equisdots/plugin-sdk`** — the runtime kit: the injected `PluginHost` handle,
+  the reactive `Settings`/`SettingsScope` store, the surface manager (planned),
+  and the compositor-side Lua `mod` SDK.
+
+Changes to the standard:
+
+1. **Injected host handle.** Plugins no longer import shell internals by relative
+   path. A plugin root opts in with `property var host` and receives a
+   `PluginHost` (colors, settings, exec, paths, logging, catalog). The shell
+   injects it in `ui/PluginHosts.qml` (host adapters) and `BarEditor` (pages)
+   via `HostApi.forPlugin(entry)`.
+2. **`scope`.** `plugin.json` gains an optional `scope` (default `plugins.<id>`)
+   naming the plugin's settings namespace. Dock declares `"scope": "dock"`.
+3. **`compat` is enforced.** `plugins_scan.sh` annotates each plugin with a
+   verdict `{state, ok, reason, requires, seen}`; hosts refuse to mount when
+   `ok === false`; the manager badges incompatible plugins.
+4. **`api.requires`** (optional): the capability set a plugin requests.
+5. **Reactive settings.** The shell's `Config` is now a façade over the SDK
+   `Settings` store (copy-on-write, state-before-notify): the one-edit lag and
+   the async-initial-load gap are fixed at the source, not per consumer.
+6. **Plugin-owned settings defaults.** `plugin.json → defaults` names a settings
+   fragment the plugin owns (`{"<scope>": {…}}`); `dots` **seeds the plugin's own
+   settings file** (`~/.config/hypr/plugins/<id>/settings.json`) from it — never
+   the core `settings.json`. The core `default_settings.json` carries no plugin
+   defaults (the `mascots` block moved from `hyprland` into `nyx/defaults.json`),
+   so a plugin is self-contained: code + UI + settings + defaults in its repo.
+7. **Plugin widget faces.** `provides.widgets.faces` lets a plugin ship its own
+   **desktop-widget types** (name/icon/defaults + variant QML files, relative to
+   the plugin UI root). The shell's `WidgetRegistry` merges them with the core
+   catalog and the redactor lists them; the **`weather` widget moved out of
+   `shell` into `timex`** (which now owns its faces). Consumer rule lives in
+   each consumer, never in the standard (same as `provides.bar.modules` /
+   `provides.panels`).
+8. **Manifest-driven install (F1).** `dots plugins add|remove|available`
+   (resolve the registry source, fetch, deploy by convention, enable,
+   compat-gated) plus the Available section in the Plugins page, fed by the
+   registry copy `dots` deploys into the shell tree. The per-plugin Nyx deploy
+   case is now the generic convention; during the experimental phase the hub
+   and plugin sources track `branch/experimental`
+   (`EQUISDOTS_PLUGIN_BRANCH` overrides).
+9. **Complete plugin bars.** `provides.bar.provider` lets a plugin ship a
+   **whole bar** (`{ comp, label?, icon? }`, comp relative to the plugin UI
+   root). The shell mounts it through `ui/PluginHosts.qml` exactly like a host
+   adapter (same handle injection, same `surfaces`/`frameObstacle`
+   contracts); the plugin's master switch owns it and its own settings page is
+   its menu. Managed plugins only (the comp lives in the shell tree so it can
+   import the core kit). The core bar stays independent behind its own
+   `bar.enabled` master switch, so a user picks which bar owns each screen
+   edge; plugin bars coexist on their own switches. POC fixture:
+   `plugins/hello-bar`.
+10. **Plugin keybinds are editable surface data.** `mod.bind(key, dsp,
+    { label, id })` records every bind in `plugins-report.json` with a stable
+    `id`, the effective key and the default key; the label feeds the
+    `keybinds` editor and is forwarded to hyprctl as the bind description.
+    The hub's `keybinds` plugin (Plugins panel) shows every plugin's binds and
+    lets the user re-key or mute a single one — overrides live in the plugin's
+    **own** settings file (`<scope>.binds.<id>` = `"KEY"` | `false`) and the
+    loader applies them at evaluation time. **The plugin owns the action; the
+    user owns the key.** A disabled plugin keeps its last known binds visible
+    (`bindsCached`) so the editor shows what would come back before re-enabling.
+    The **core's own shortcuts** (`keybinds.lua`) are listed read-only in the
+    editor and a capture that collides with one is **refused**: a plugin
+    override never silently removes a core bind.

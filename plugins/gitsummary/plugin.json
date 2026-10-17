@@ -1,0 +1,37 @@
+{
+  "id": "gitsummary",
+  "name": "Git",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Git repositories under $HOME: branch, dirty count and open-in-terminal",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "gitsummary",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/GitSummaryPage.qml",
+    "label": "Git"
+  },
+  "provides": {
+    "panels": {
+      "git": {
+        "comp": "ui/GitSummary.qml",
+        "w": 720,
+        "h": 560,
+        "label": "Git"
+      }
+    }
+  }
+}

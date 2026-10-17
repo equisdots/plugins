@@ -1,0 +1,13 @@
+{
+  "id": "dock",
+  "name": "Dock",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Configurable application dock: your launchers on any screen edge, with live dimensions, colors and automatic palette following",
+  "type": "shell",
+  "compat": { "shell": ">=0.1.0" },
+  "toggle": "dock.enabled",
+  "scope": "dock",
+  "settings": { "page": "settings/DockPage.qml", "label": "Dock", "icon": "" },
+  "host": "host/Dock.qml"
+}

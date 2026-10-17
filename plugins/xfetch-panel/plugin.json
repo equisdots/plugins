@@ -1,0 +1,17 @@
+{
+  "id": "xfetch-panel",
+  "name": "XFetch Panel",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "In-shell system fetch: an xfetch-style card (logo + system info + live palette) as a popup",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },
+  "scope": "xfetch-panel",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/XfetchPanelPage.qml", "label": "XFetch Panel", "icon": "" },
+  "provides": {
+    "panels": { "xfetch": { "comp": "ui/XfetchPanel.qml", "w": 720, "h": 420, "label": "XFetch" } }
+  }
+}

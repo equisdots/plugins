@@ -1,0 +1,46 @@
+{
+  "id": "fanspeed",
+  "name": "Fan",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Fan speed from lm_sensors",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "fanspeed",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/FanspeedPage.qml",
+    "label": "Fan",
+    "icon": "\udb80\ude10"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "fanspeed": {
+          "comp": "bar/Fanspeed.qml",
+          "label": "Fan",
+          "icon": "\udb80\ude10"
+        }
+      }
+    },
+    "panels": {
+      "fanspeed": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "Fan"
+      }
+    }
+  }
+}

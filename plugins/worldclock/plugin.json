@@ -1,0 +1,46 @@
+{
+  "id": "worldclock",
+  "name": "World Clock",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Time in a second timezone (UTC by default)",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "worldclock",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/WorldclockPage.qml",
+    "label": "World Clock",
+    "icon": "\udb80\udd50"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "worldclock": {
+          "comp": "bar/Worldclock.qml",
+          "label": "World Clock",
+          "icon": "\udb80\udd50"
+        }
+      }
+    },
+    "panels": {
+      "worldclock": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 300,
+        "label": "World Clock"
+      }
+    }
+  }
+}

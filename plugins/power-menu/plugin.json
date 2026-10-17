@@ -1,0 +1,17 @@
+{
+  "id": "power-menu",
+  "name": "Power Menu",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Session power menu popup: lock, logout, suspend, reboot, shutdown (with confirm)",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "log"] },
+  "scope": "power-menu",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": { "page": "settings/PowerMenuPage.qml", "label": "Power Menu", "icon": "" },
+  "provides": {
+    "panels": { "power": { "comp": "ui/PowerMenu.qml", "w": 420, "h": 470, "label": "Power" } }
+  }
+}

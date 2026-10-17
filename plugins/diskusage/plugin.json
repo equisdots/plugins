@@ -1,0 +1,37 @@
+{
+  "id": "diskusage",
+  "name": "Disks",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Filesystem usage: mountpoint, used/total and a threshold-coloured bar",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "paths",
+      "log"
+    ]
+  },
+  "scope": "diskusage",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/DiskUsagePage.qml",
+    "label": "Disks"
+  },
+  "provides": {
+    "panels": {
+      "df": {
+        "comp": "ui/DiskUsage.qml",
+        "w": 700,
+        "h": 540,
+        "label": "Disks"
+      }
+    }
+  }
+}

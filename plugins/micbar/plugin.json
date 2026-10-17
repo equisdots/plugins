@@ -1,0 +1,46 @@
+{
+  "id": "micbar",
+  "name": "Microphone",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Microphone mute state",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "micbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "settings": {
+    "page": "settings/MicbarPage.qml",
+    "label": "Microphone",
+    "icon": "\udb80\udf6c"
+  },
+  "provides": {
+    "bar": {
+      "modules": {
+        "micbar": {
+          "comp": "bar/Micbar.qml",
+          "label": "Microphone",
+          "icon": "\udb80\udf6c"
+        }
+      }
+    },
+    "panels": {
+      "micbar": {
+        "comp": "ui/Popup.qml",
+        "w": 460,
+        "h": 260,
+        "label": "Microphone"
+      }
+    }
+  }
+}
