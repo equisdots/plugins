@@ -251,6 +251,14 @@ shell wires it dynamically:
   the convention in §6 (whole plugin → shell tree; runtime subset → registry),
   enable it and reload Hyprland. A violated `compat` refuses the install
   (`--force` overrides); unverifiable ranges only warn.
+- `dots plugins add --all [--force]` — install only the missing registry
+  plugins. Already-installed plugins (managed or user-owned) are skipped
+  untouched; a half-installed managed plugin (runtime manifest or UI face
+  missing) is repaired; new plugins are left disabled (`toggle=false`) so the
+  bulk install does not mount every module and bind at once. Each needed source
+  repo is fetched once. Incompatible entries are skipped unless `--force` is
+  passed; a failed entry does not abort the batch, is reported in the summary
+  (non-zero exit), and is retried by simply running the command again.
 - `dots plugins remove <id>` — removes the managed copies (registry + UI),
   switches the toggle off and reloads. User plugins (`plugins-user/`) are not
   managed by dots and are refused.
