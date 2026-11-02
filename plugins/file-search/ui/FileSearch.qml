@@ -84,7 +84,27 @@ Timer {
 }
 
     Rectangle {
-        anchors.fill: parent; color: window.base; radius: s(16)
+        id: panelBg
+        anchors.fill: parent; color: Theme.liquidGlass ? "transparent" : window.base; radius: s(16)
+
+            LiquidGlass {
+                anchors.fill: parent
+                enabled: Theme.liquidGlass
+                screenPosOverride: {
+                    const p = panelBg.mapToItem(null, 0, 0);
+                    return Qt.vector2d(p.x, p.y);
+                }
+                topLeftRadius: s(16)
+                topRightRadius: s(16)
+                bottomLeftRadius: s(16)
+                bottomRightRadius: s(16)
+                tintColor: "#101018"
+                tintAmount: 0.38
+                interiorShade: 0.38
+                bezel: Math.max(8, Math.min(20, Math.min(width, height) * 0.25))
+                frost: Math.max(6, Math.min(16, Math.min(width, height) * 0.20))
+                rim: 0.95
+            }
 
         ColumnLayout {
             anchors.fill: parent; anchors.margins: s(20); spacing: s(10)

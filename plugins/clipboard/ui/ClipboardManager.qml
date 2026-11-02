@@ -269,10 +269,29 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
 
         radius: window.s(21)
-        color: Qt.rgba(window.base.r, window.base.g, window.base.b, window.base.a)
+        color: Theme.liquidGlass ? "transparent" : Qt.rgba(window.base.r, window.base.g, window.base.b, window.base.a)
         border.color: window.surface1
         border.width: 1
         clip: true
+
+            LiquidGlass {
+                anchors.fill: parent
+                enabled: Theme.liquidGlass
+                screenPosOverride: {
+                    const p = mainBg.mapToItem(null, 0, 0);
+                    return Qt.vector2d(p.x, p.y);
+                }
+                topLeftRadius: window.s(21)
+                topRightRadius: window.s(21)
+                bottomLeftRadius: window.s(21)
+                bottomRightRadius: window.s(21)
+                tintColor: "#101018"
+                tintAmount: 0.38
+                interiorShade: 0.38
+                bezel: Math.max(8, Math.min(20, Math.min(width, height) * 0.25))
+                frost: Math.max(6, Math.min(16, Math.min(width, height) * 0.20))
+                rim: 0.95
+            }
 
         transform: Translate { y: (window.introPhase - 1) * window.s(60) }
         opacity: window.introPhase
