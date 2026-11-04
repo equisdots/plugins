@@ -1,6 +1,6 @@
 // Wallpaper Motion popup — change the animated wallpaper (xwww scene) frame
 // rate live. Relaunches the running scene with the same args but a new --fps,
-// so palette/transition/outputs are preserved. davincix is not modified.
+// so palette/transition/outputs are preserved. davinci is not modified.
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -110,7 +110,7 @@ PluginPopup {
 
         Text {
             Layout.fillWidth: true
-            text: "davincix ships 15 fps. This changes the live scene and is remembered for the next scenes."
+            text: "davinci ships 15 fps. This changes the live scene and is remembered for the next scenes."
             font.family: "Hack Nerd Font"; font.pixelSize: 10; color: Theme.subtext0
             wrapMode: Text.WordWrap
             lineHeight: 1.15

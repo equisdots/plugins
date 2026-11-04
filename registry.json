@@ -499,7 +499,7 @@
       "id": "wallpaper-motion",
       "name": "Wallpaper Motion",
       "author": "xscriptor",
-      "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davincix",
+      "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davinci",
       "source": "equisdots/plugins",
       "path": "plugins/wallpaper-motion"
     }

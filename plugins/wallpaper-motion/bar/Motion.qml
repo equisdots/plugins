@@ -1,6 +1,6 @@
 // Wallpaper Motion — frame rate of the running xwww scene (animated wallpaper).
 // Island: "N fps" (or "static" when no scene). Click opens the popup to change
-// it live (without touching davincix).
+// it live (without touching davinci).
 import QtQuick
 import Quickshell
 import Quickshell.Io

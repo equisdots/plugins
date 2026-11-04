@@ -1,6 +1,6 @@
 // Wallpaper Motion host — keeps the saved frame rate sticky: watches the live
 // xwww scene and, whenever a NEW scene starts (new pid, e.g. after applying a
-// wallpaper in the picker), re-applies the saved rate. No davincix changes.
+// wallpaper in the picker), re-applies the saved rate. No davinci changes.
 import QtQuick
 import Quickshell
 import Quickshell.Io
