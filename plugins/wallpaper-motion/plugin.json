@@ -3,7 +3,7 @@
   "name": "Wallpaper Motion",
   "version": "0.1.0",
   "author": "xscriptor",
-  "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davincix",
+  "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davinci",
   "type": "shell",
   "compat": { "host": ">=1.0.0 <2.0.0" },
   "api": { "requires": ["colors", "settings", "exec", "paths", "log"] },

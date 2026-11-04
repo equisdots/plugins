@@ -1,7 +1,7 @@
 # Wallpaper Motion
 
-Frame rate of the **animated wallpaper** (the `xwww` scene davincix runs),
-controllable live from the bar without adding options to davincix.
+Frame rate of the **animated wallpaper** (the `xwww` scene davinci runs),
+controllable live from the bar without adding options to davinci.
 
 - **Island** `󰈆 N fps` — the live rate of the running scene (`static` when no
   scene is active). Click opens the popup.
@@ -13,12 +13,12 @@ controllable live from the bar without adding options to davincix.
   chosen rate.
 - **Settings** (`Plugins → Configure`) — the rate + the popup position.
 
-## Why this does not touch davincix
+## Why this does not touch davinci
 
-`davincix` already launches scenes with `--fps ${DAVINCIX_SCENE_FPS:-15}`
-(`davincix/apply.sh`). This plugin does not add a davincix option: it reads the
+`davinci` already launches scenes with `--fps ${DAVINCI_SCENE_FPS:-15}`
+(`davinci/apply.sh`). This plugin does not add a davinci option: it reads the
 live scene process argv, swaps the `--fps` value and relaunches the exact same
-command. davincix keeps owning "which wallpaper"; this plugin only owns "how
+command. davinci keeps owning "which wallpaper"; this plugin only owns "how
 smooth it moves".
 
 ## Notes

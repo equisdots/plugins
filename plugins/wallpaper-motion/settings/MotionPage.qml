@@ -29,7 +29,7 @@ Item {
             Text { text: "Wallpaper Motion"; font.family: "Hack Nerd Font"; font.weight: Font.Black; font.pixelSize: 24; color: Theme.text }
             Text {
                 Layout.fillWidth: true
-                text: "Frame rate of the animated wallpaper (xwww scene). Changing it relaunches the running scene at the new rate; davincix itself is untouched."
+                text: "Frame rate of the animated wallpaper (xwww scene). Changing it relaunches the running scene at the new rate; davinci itself is untouched."
                 font.family: "Hack Nerd Font"; font.pixelSize: 11; color: Theme.subtext0; wrapMode: Text.WordWrap
             }
         }

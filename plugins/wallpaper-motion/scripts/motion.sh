@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # wallpaper-motion — reads/changes the frame rate of the RUNNING xwww scene
-# (the animated wallpaper) without touching davincix.
+# (the animated wallpaper) without touching davinci.
 #
-# davincix launches scenes as:
+# davinci launches scenes as:
 #   xwww scene run <dir>/scene.js --palette equisdots --fps 15 ...
 # This script exchanges the `--fps` value in the live process argv and
 # relaunches the exact same command, so palette/transition/outputs are kept.
