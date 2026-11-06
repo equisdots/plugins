@@ -1,0 +1,16 @@
+{
+  "id": "samurai-dock",
+  "name": "Samurai Dock",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "A separate Samurai-styled bottom dock with app launchers, per-output workspaces and flat calendar, resource and power panels",
+  "type": "shell",
+  "compat": { "shell": ">=0.1.0" },
+  "toggle": "samurai-dock.enabled",
+  "scope": "samurai-dock",
+  "defaults": "defaults.json",
+  "defaultEnabled": false,
+  "settings": { "page": "settings/SamuraiDockPage.qml", "label": "Samurai Dock", "icon": "" },
+  "host": "host/SamuraiDock.qml",
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log", "stats"] }
+}
