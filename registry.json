@@ -392,6 +392,14 @@
       "path": "plugins/samurai-bar"
     },
     {
+      "id": "samurai-dock",
+      "name": "Samurai Dock",
+      "author": "xscriptor",
+      "description": "Independent Samurai bottom dock with app launchers, per-output workspaces and flat calendar, resource and power panels",
+      "source": "equisdots/plugins",
+      "path": "plugins/samurai-dock"
+    },
+    {
       "id": "snippetbox",
       "name": "Snippets",
       "author": "xscriptor",

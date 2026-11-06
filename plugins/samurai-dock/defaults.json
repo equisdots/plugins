@@ -1,0 +1,16 @@
+{
+  "samurai-dock": {
+    "height": 54,
+    "showWorkspaces": true,
+    "showClock": true,
+    "showStats": true,
+    "showPower": true,
+    "apps": [
+      { "label": "TERM", "glyph": "󰆍", "exec": "kitty" },
+      { "label": "FILES", "glyph": "󰉋", "exec": "nautilus" },
+      { "label": "WEB", "glyph": "󰖟", "exec": "brave" },
+      { "label": "CODE", "glyph": "󰅩", "exec": "code" },
+      { "label": "MUSIC", "glyph": "󰝚", "exec": "spotify" }
+    ]
+  }
+}
