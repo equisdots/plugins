@@ -400,6 +400,22 @@
       "path": "plugins/samurai-dock"
     },
     {
+      "id": "mos-topbar",
+      "name": "mos Topbar",
+      "author": "xscriptor",
+      "description": "macOS 27-style menu bar with Apple/app menus, clickable status extras, Control Center, Wi-Fi, Bluetooth, battery and clock",
+      "source": "equisdots/plugins",
+      "path": "plugins/mos-topbar"
+    },
+    {
+      "id": "mos-dock",
+      "name": "mos Dock",
+      "author": "xscriptor",
+      "description": "Customizable macOS-style bottom dock with editable app launchers, magnification and translucent glass geometry",
+      "source": "equisdots/plugins",
+      "path": "plugins/mos-dock"
+    },
+    {
       "id": "snippetbox",
       "name": "Snippets",
       "author": "xscriptor",

@@ -1,0 +1,19 @@
+{
+  "id": "mos-topbar",
+  "name": "mos Topbar",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "A macOS-style menu bar for Hyprland: Apple and app menus, clickable status extras, Control Center, Wi-Fi, Bluetooth, battery and clock menus",
+  "type": "shell",
+  "compat": { "host": ">=1.0.0 <2.0.0" },
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log", "stats"] },
+  "scope": "mos-topbar",
+  "defaults": "defaults.json",
+  "defaultEnabled": false,
+  "settings": { "page": "settings/MosTopbarPage.qml", "label": "mos Topbar", "icon": "" },
+  "provides": {
+    "bar": {
+      "provider": { "comp": "bar/MosTopbar.qml", "label": "mos Topbar", "icon": "" }
+    }
+  }
+}

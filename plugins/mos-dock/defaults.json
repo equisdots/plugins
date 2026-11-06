@@ -1,0 +1,18 @@
+{
+  "mos-dock": {
+    "iconSize": 48,
+    "spacing": 8,
+    "opacity": 0.72,
+    "magnify": true,
+    "magnifyScale": 1.22,
+    "showLabels": false,
+    "apps": [
+      { "label": "FINDER", "glyph": "󰉋", "exec": "nautilus" },
+      { "label": "SAFARI", "glyph": "󰖟", "exec": "brave" },
+      { "label": "MAIL", "glyph": "󰇮", "exec": "thunderbird" },
+      { "label": "MUSIC", "glyph": "󰝚", "exec": "spotify" },
+      { "label": "TERMINAL", "glyph": "󰆍", "exec": "kitty" },
+      { "label": "SETTINGS", "glyph": "󰒓", "exec": "~/.config/hypr/scripts/qs_manager.sh toggle settings" }
+    ]
+  }
+}
