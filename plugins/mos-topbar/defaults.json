@@ -1,0 +1,19 @@
+{
+  "mos-topbar": {
+    "height": 24,
+    "showSeconds": false,
+    "showBatteryPercent": false,
+    "showControlCenter": true,
+    "showSpotlight": true,
+    "showWeather": false,
+    "itemSpacing": 5,
+    "showAppName": true,
+    "showAppMenus": true,
+    "showWifi": true,
+    "showBluetooth": true,
+    "showBattery": true,
+    "showClock": true,
+    "barOpacity": 0.66,
+    "menuOpacity": 0.95
+  }
+}
