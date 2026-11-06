@@ -8,6 +8,8 @@
     "showMem": true,
     "showTemp": true,
     "showNet": true,
-    "showBattery": true
+    "showBattery": true,
+    "showCalendar": true,
+    "showStats": true
   }
 }

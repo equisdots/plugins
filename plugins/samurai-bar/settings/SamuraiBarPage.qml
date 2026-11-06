@@ -29,7 +29,7 @@ Item {
                 id: inner
                 anchors.fill: parent; anchors.margins: Theme.gapLg; spacing: Theme.gapSm
                 Repeater {
-                    model: ["Workspaces", "Clock + date", "CPU", "Memory", "Temperature", "Network", "Battery"]
+                    model: ["Workspaces", "Clock + date", "Calendar popup", "CPU", "Memory", "Temperature", "Network", "Sparklines + top processes", "System stats panel", "Battery"]
                     delegate: Text { required property var modelData; text: "· " + modelData; font.family: "Hack Nerd Font"; font.pixelSize: 12; color: Theme.text }
                 }
             }
