@@ -1,0 +1,130 @@
+{
+  "id": "samurai-widgets",
+  "name": "Samurai Widgets",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Monochrome Samurai desktop widgets: clock, system, weather, battery, signal and network traffic",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "samurai-widgets",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "samurai-clock": {
+          "name": "Samurai Clock",
+          "icon": "侍",
+          "defaultWidth": 340,
+          "defaultHeight": 180,
+          "defaultVariant": "plate",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "plate": {
+              "comp": "widgets/SamuraiClock.qml",
+              "icon": "1",
+              "label": "Plate"
+            }
+          }
+        },
+        "samurai-system": {
+          "name": "Samurai System",
+          "icon": "󰍛",
+          "defaultWidth": 420,
+          "defaultHeight": 220,
+          "defaultVariant": "stack",
+          "stretchWidth": true,
+          "requiresFilePicker": false,
+          "variants": {
+            "stack": {
+              "comp": "widgets/SamuraiSystem.qml",
+              "icon": "1",
+              "label": "Stack"
+            }
+          }
+        },
+        "samurai-weather": {
+          "name": "Samurai Weather",
+          "icon": "󰖐",
+          "defaultWidth": 340,
+          "defaultHeight": 220,
+          "defaultVariant": "plate",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "plate": {
+              "comp": "widgets/SamuraiWeather.qml",
+              "icon": "1",
+              "label": "Plate"
+            }
+          }
+        },
+        "samurai-battery": {
+          "name": "Samurai Battery",
+          "icon": "󰁹",
+          "defaultWidth": 320,
+          "defaultHeight": 180,
+          "defaultVariant": "bar",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "bar": {
+              "comp": "widgets/SamuraiBattery.qml",
+              "icon": "1",
+              "label": "Bar"
+            }
+          }
+        },
+        "samurai-signal": {
+          "name": "Samurai Signal",
+          "icon": "󰎈",
+          "defaultWidth": 520,
+          "defaultHeight": 230,
+          "defaultVariant": "histogram",
+          "stretchWidth": true,
+          "requiresFilePicker": false,
+          "variants": {
+            "histogram": {
+              "comp": "widgets/SamuraiHistogram.qml",
+              "icon": "1",
+              "label": "Histogram"
+            },
+            "cartesian": {
+              "comp": "widgets/SamuraiCartesian.qml",
+              "icon": "2",
+              "label": "Cartesian"
+            }
+          }
+        },
+        "samurai-traffic": {
+          "name": "Samurai Traffic",
+          "icon": "󰛳",
+          "defaultWidth": 560,
+          "defaultHeight": 240,
+          "defaultVariant": "bars",
+          "stretchWidth": true,
+          "requiresFilePicker": false,
+          "variants": {
+            "bars": {
+              "comp": "widgets/SamuraiTraffic.qml",
+              "icon": "1",
+              "label": "Bars"
+            }
+          }
+        }
+      }
+    }
+  }
+}

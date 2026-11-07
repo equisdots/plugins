@@ -526,6 +526,22 @@
       "description": "Frame rate of the animated wallpaper (xwww scene) — live, without touching davinci",
       "source": "equisdots/plugins",
       "path": "plugins/wallpaper-motion"
+    },
+    {
+      "id": "samurai-widgets",
+      "name": "Samurai Widgets",
+      "author": "xscriptor",
+      "description": "Monochrome Samurai desktop widgets: clock, system, weather, battery, signal charts and network traffic",
+      "source": "equisdots/plugins",
+      "path": "plugins/samurai-widgets"
+    },
+    {
+      "id": "mos-widgets",
+      "name": "mos Widgets",
+      "author": "xscriptor",
+      "description": "macOS-inspired desktop widgets: analog clock, weather, calendar, battery and music",
+      "source": "equisdots/plugins",
+      "path": "plugins/mos-widgets"
     }
   ]
 }

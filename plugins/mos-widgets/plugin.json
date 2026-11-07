@@ -1,0 +1,109 @@
+{
+  "id": "mos-widgets",
+  "name": "mos Widgets",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "macOS-inspired desktop widgets: analog clock, weather, calendar, battery and music",
+  "type": "shell",
+  "compat": {
+    "host": ">=1.0.0 <2.0.0"
+  },
+  "api": {
+    "requires": [
+      "colors",
+      "settings",
+      "exec",
+      "log",
+      "paths"
+    ]
+  },
+  "scope": "mos-widgets",
+  "defaults": "defaults.json",
+  "defaultEnabled": true,
+  "provides": {
+    "widgets": {
+      "faces": {
+        "mos-clock": {
+          "name": "Clock",
+          "icon": "󰥔",
+          "defaultWidth": 300,
+          "defaultHeight": 300,
+          "defaultVariant": "analog",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "analog": {
+              "comp": "widgets/MosClock.qml",
+              "icon": "1",
+              "label": "Analog"
+            }
+          }
+        },
+        "mos-weather": {
+          "name": "Weather",
+          "icon": "󰖐",
+          "defaultWidth": 340,
+          "defaultHeight": 340,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/MosWeather.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        },
+        "mos-calendar": {
+          "name": "Calendar",
+          "icon": "󰃭",
+          "defaultWidth": 320,
+          "defaultHeight": 360,
+          "defaultVariant": "card",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/MosCalendar.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        },
+        "mos-battery": {
+          "name": "Battery",
+          "icon": "󰁹",
+          "defaultWidth": 300,
+          "defaultHeight": 300,
+          "defaultVariant": "ring",
+          "stretchWidth": false,
+          "requiresFilePicker": false,
+          "variants": {
+            "ring": {
+              "comp": "widgets/MosBattery.qml",
+              "icon": "1",
+              "label": "Ring"
+            }
+          }
+        },
+        "mos-music": {
+          "name": "Music",
+          "icon": "󰝚",
+          "defaultWidth": 380,
+          "defaultHeight": 220,
+          "defaultVariant": "card",
+          "stretchWidth": true,
+          "requiresFilePicker": false,
+          "variants": {
+            "card": {
+              "comp": "widgets/MosMusic.qml",
+              "icon": "1",
+              "label": "Card"
+            }
+          }
+        }
+      }
+    }
+  }
+}

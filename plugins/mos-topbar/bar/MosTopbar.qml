@@ -63,6 +63,14 @@ Item {
     property int batPct: -1
     property int volume: 0
     property int brightness: 0
+    property var wifiNetworks: []
+    property var btDevices: []
+    property var batteryInfo: ({})
+    property var aboutInfo: ({})
+    property var recentFiles: []
+    property string recentStatus: ""
+    property string wifiPanelStatus: ""
+    property string btPanelStatus: ""
 
     Process {
         id: activeProc
@@ -89,6 +97,80 @@ Item {
         id: btProc
         command: ["bash", root.scriptsDir + "/bluetooth.sh"]
         stdout: StdioCollector { onStreamFinished: root.btOn = (this.text || "").trim() === "on" }
+    }
+    Process {
+        id: wifiListProc
+        command: ["bash", root.scriptsDir + "/wifi-list.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let out = [];
+                let lines = (this.text || "").trim().split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                    let p = lines[i].split("\t");
+                    if (p.length >= 4) out.push({
+                        inuse: String(p[0]).trim() === "*",
+                        ssid: p[1], signal: Number(p[2]) || 0, security: p[3]
+                    });
+                }
+                root.wifiNetworks = out;
+            }
+        }
+    }
+    Process {
+        id: btListProc
+        command: ["bash", root.scriptsDir + "/bt-list.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let out = [];
+                let lines = (this.text || "").trim().split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                    let p = lines[i].split("\t");
+                    if (p.length >= 3) out.push({ mac: p[0], name: p[1], connected: p[2] === "1" });
+                }
+                root.btDevices = out;
+            }
+        }
+    }
+    Process {
+        id: batteryInfoProc
+        command: ["bash", root.scriptsDir + "/battery-info.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let p = (this.text || "").trim().split("\t");
+                if (p.length >= 6) root.batteryInfo = {
+                    state: p[0], percent: Number(p[1]) || 0, watts: Number(p[2]) || 0,
+                    health: p[3], cycles: p[4], full: p[5]
+                };
+            }
+        }
+    }
+    Process {
+        id: aboutProc
+        command: ["bash", root.scriptsDir + "/about.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let p = (this.text || "").trim().split("\t");
+                if (p.length >= 6) root.aboutInfo = {
+                    host: p[0], os: p[1], kernel: p[2], cpu: p[3], mem: p[4], gpu: p[5]
+                };
+            }
+        }
+    }
+    Process {
+        id: recentProc
+        command: ["bash", root.scriptsDir + "/recent.sh"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let out = [];
+                let lines = (this.text || "").trim().split("\n");
+                for (let i = 0; i < lines.length; i++) {
+                    let p = lines[i].split("\t");
+                    if (p.length >= 2 && p[0] !== "") out.push({ path: p[0], name: p[1] });
+                }
+                root.recentFiles = out;
+                root.recentStatus = out.length === 0 ? "NO RECENT FILES" : "";
+            }
+        }
     }
     Process {
         id: batteryProc
@@ -123,15 +205,57 @@ Item {
     function refreshWifi() { wifiProc.running = false; wifiProc.running = true; }
     function refreshBt() { btProc.running = false; btProc.running = true; }
     function refreshControl() { controlProc.running = false; controlProc.running = true; }
+    function refreshWifiList() { wifiListProc.running = false; wifiListProc.running = true; }
+    function refreshBtList() { btListProc.running = false; btListProc.running = true; }
+    function refreshBatteryInfo() { batteryInfoProc.running = false; batteryInfoProc.running = true; }
+    function refreshAbout() { aboutProc.running = false; aboutProc.running = true; }
+    function refreshRecent() { recentProc.running = false; recentProc.running = true; }
+    function openPath(path) {
+        if (String(path) !== "") Quickshell.execDetached(["xdg-open", String(path)]);
+        root.closeMenu();
+    }
+    function refreshLists() {
+        if (root.menuKind === "wifi") root.refreshWifiList();
+        if (root.menuKind === "bluetooth") root.refreshBtList();
+    }
+    function scanWifi() {
+        root.wifiPanelStatus = "SCANNING…";
+        root.exec("nmcli device wifi rescan");
+        wifiDelay.restart();
+    }
+    function connectWifi(ssid) {
+        root.wifiPanelStatus = "CONNECTING " + ssid + "…";
+        Quickshell.execDetached(["nmcli", "device", "wifi", "connect", String(ssid)]);
+        wifiDelay.restart();
+    }
+    function connectBt(mac, connected) {
+        root.btPanelStatus = connected ? "DISCONNECTING…" : "CONNECTING…";
+        Quickshell.execDetached(["bluetoothctl", connected ? "disconnect" : "connect", String(mac)]);
+        btDelay.restart();
+    }
+    function scanBt() {
+        root.btPanelStatus = "SCANNING…";
+        Quickshell.execDetached(["bluetoothctl", "--timeout", "8", "scan", "on"]);
+        btDelay.restart();
+    }
+
+    Timer { interval: 4000; running: root.menuKind === "wifi" || root.menuKind === "bluetooth"; repeat: true
+        onTriggered: root.refreshLists() }
+    Timer { id: wifiDelay; interval: 1400; onTriggered: root.refreshWifiList() }
+    Timer { id: btDelay; interval: 8500; onTriggered: root.refreshBtList() }
+    Timer { interval: 10000; running: root.menuKind === "battery"; repeat: true
+        onTriggered: root.refreshBatteryInfo() }
     function toggleWifi() {
         root.wifiOn = !root.wifiOn;
         root.exec("nmcli radio wifi " + (root.wifiOn ? "on" : "off"));
         root.refreshWifi();
+        root.refreshWifiList();
     }
     function toggleBt() {
         root.btOn = !root.btOn;
         root.exec("bluetoothctl power " + (root.btOn ? "on" : "off"));
         root.refreshBt();
+        root.refreshBtList();
     }
 
     // ── menu state ─────────────────────────────────────────────────────────
@@ -156,16 +280,16 @@ Item {
         let app = root.activeApp;
         if (kind === "apple") {
             return [
-                item("About This Mac", "about", "", false),
+                item("About This Mac", "about"),
                 sep(),
                 item("System Settings…", "settings", "⌘,"),
-                item("App Store…", "appstore", "", false),
+                item("App Store…", "appstore"),
                 sep(),
-                item("Recent Items", "recent", "", false),
+                item("Recent Items", "recent"),
                 sep(),
-                item("Sleep", "sleep", ""),
-                item("Restart…", "restart", "", false),
-                item("Shut Down…", "shutdown", "", false),
+                item("Sleep", "sleep"),
+                item("Restart…", "restart"),
+                item("Shut Down…", "shutdown"),
                 sep(),
                 item("Lock Screen", "lock", "⌃⌘Q"),
                 item("Log Out…", "logout", "⇧⌘Q")
@@ -287,6 +411,11 @@ Item {
             root.updateCalendar();
         }
         if (kind === "control") root.refreshControl();
+        if (kind === "wifi") { root.wifiPanelStatus = ""; root.refreshWifiList(); }
+        if (kind === "bluetooth") { root.btPanelStatus = ""; root.refreshBtList(); }
+        if (kind === "battery") root.refreshBatteryInfo();
+        if (kind === "about") root.refreshAbout();
+        if (kind === "recent") { root.recentStatus = ""; root.refreshRecent(); }
     }
 
     // ── actions ────────────────────────────────────────────────────────────
@@ -296,14 +425,19 @@ Item {
 
     function run(action) {
         root.closeMenu();
-        if (action === "settings") return root.exec("~/.config/hypr/scripts/qs_manager.sh toggle settings");
+        if (action === "settings") return root.openMenu("settings", root.menuAnchorX, root.menuScreen, root.menuAlignRight);
         if (action === "spotlight") return root.exec("~/.config/hypr/scripts/qs_manager.sh toggle launcher");
         if (action === "close" || action === "quit") return root.exec("hyprctl dispatch 'hl.dsp.window.close()'");
         if (action === "fullscreen") return root.exec("hyprctl dispatch 'hl.dsp.window.fullscreen()'");
         if (action === "float") return root.exec("hyprctl dispatch 'hl.dsp.window.float()'");
         if (action === "center") return root.exec("hyprctl dispatch 'hl.dsp.window.center()'");
+        if (action === "about") return root.openMenu("about", root.menuAnchorX, root.menuScreen, root.menuAlignRight);
+        if (action === "recent") return root.openMenu("recent", root.menuAnchorX, root.menuScreen, root.menuAlignRight);
+        if (action === "appstore") return root.exec("if command -v pamac-manager >/dev/null 2>&1; then pamac-manager; elif command -v gnome-software >/dev/null 2>&1; then gnome-software; elif command -v plasma-discover >/dev/null 2>&1; then plasma-discover; else notify-send 'App Store' 'No package manager found'; fi");
         if (action === "lock") return root.exec("loginctl lock-session");
         if (action === "sleep") return root.exec("systemctl suspend");
+        if (action === "restart") return root.exec("systemctl reboot --no-block");
+        if (action === "shutdown") return root.exec("systemctl poweroff --no-block");
         if (action === "logout") return root.exec("hyprctl dispatch 'hl.dsp.exit()'");
         if (action === "wifi") return root.toggleWifi();
         if (action === "bt") return root.toggleBt();
@@ -595,6 +729,9 @@ Item {
                 Rectangle {
                     id: menuCard
                     visible: root.menuOpen && root.menuKind !== "control" && root.menuKind !== "clock"
+                        && root.menuKind !== "wifi" && root.menuKind !== "bluetooth"
+                        && root.menuKind !== "battery" && root.menuKind !== "about" && root.menuKind !== "recent"
+                        && root.menuKind !== "settings"
                     width: 236
                     height: menuCol.implicitHeight + 10
                     x: root.menuAlignRight
@@ -672,6 +809,362 @@ Item {
                             value: root.volume
                             onMoved: root.setVolume(value)
                         }
+                    }
+                }
+
+                // Wi-Fi networks.
+                Rectangle {
+                    id: wifiCard
+                    visible: root.menuKind === "wifi"
+                    width: 330
+                    height: wifiCol.implicitHeight + 24
+                    x: Math.max(8, modelData.width - width - 10)
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: wifiCol
+                        anchors.fill: parent; anchors.margins: 12; spacing: 7
+                        Row {
+                            width: parent.width
+                            Text { text: "WI-FI"; font.family: root.uiFont; font.pixelSize: 10; font.letterSpacing: 1.3; color: root.dimColor }
+                            Item { width: parent.width - 130; height: 1 }
+                            Text {
+                                text: root.wifiOn ? "ON" : "OFF"
+                                font.family: root.uiFont; font.pixelSize: 9; color: root.wifiOn ? root.textColor : root.dimColor
+                                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.toggleWifi() }
+                            }
+                        }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        ListView {
+                            width: parent.width; height: 210; clip: true
+                            model: root.wifiNetworks
+                            delegate: Item {
+                                required property var modelData
+                                width: parent.width; height: 30
+                                Rectangle {
+                                    anchors.fill: parent; radius: 5
+                                    color: modelData.inuse ? Qt.rgba(0.04, 0.52, 1, 0.22) : (wifiMouse.containsMouse ? root.hoverColor : "transparent")
+                                }
+                                Text {
+                                    anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 92
+                                    text: modelData.ssid; elide: Text.ElideRight
+                                    font.family: root.uiFont; font.pixelSize: 11
+                                    color: modelData.inuse ? root.accent : root.textColor
+                                }
+                                Text {
+                                    anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.signal + "%  " + (modelData.security === "" ? "OPEN" : modelData.security)
+                                    font.family: root.uiFont; font.pixelSize: 8; color: root.dimColor
+                                }
+                                MouseArea {
+                                    id: wifiMouse; anchors.fill: parent; hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.connectWifi(modelData.ssid)
+                                }
+                            }
+                        }
+                        Row {
+                            width: parent.width; spacing: 8
+                            Text {
+                                text: "SCAN"; font.family: root.uiFont; font.pixelSize: 9; color: root.accent
+                                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.scanWifi() }
+                            }
+                            Item { width: parent.width - 88; height: 1 }
+                            Text {
+                                text: root.wifiPanelStatus
+                                font.family: root.uiFont; font.pixelSize: 8; color: root.dimColor
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+                }
+
+                // Bluetooth devices.
+                Rectangle {
+                    id: btCard
+                    visible: root.menuKind === "bluetooth"
+                    width: 330
+                    height: btCol.implicitHeight + 24
+                    x: Math.max(8, modelData.width - width - 10)
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: btCol
+                        anchors.fill: parent; anchors.margins: 12; spacing: 7
+                        Row {
+                            width: parent.width
+                            Text { text: "BLUETOOTH"; font.family: root.uiFont; font.pixelSize: 10; font.letterSpacing: 1.3; color: root.dimColor }
+                            Item { width: parent.width - 170; height: 1 }
+                            Text {
+                                text: root.btOn ? "ON" : "OFF"
+                                font.family: root.uiFont; font.pixelSize: 9; color: root.btOn ? root.textColor : root.dimColor
+                                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.toggleBt() }
+                            }
+                        }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        ListView {
+                            width: parent.width; height: 170; clip: true
+                            model: root.btDevices
+                            delegate: Item {
+                                required property var modelData
+                                width: parent.width; height: 30
+                                Rectangle {
+                                    anchors.fill: parent; radius: 5
+                                    color: modelData.connected ? Qt.rgba(0.04, 0.8, 0.35, 0.20) : (btMouse.containsMouse ? root.hoverColor : "transparent")
+                                }
+                                Text {
+                                    anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 100
+                                    text: modelData.name; elide: Text.ElideRight
+                                    font.family: root.uiFont; font.pixelSize: 11; color: root.textColor
+                                }
+                                Text {
+                                    anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.connected ? "CONNECTED" : modelData.mac
+                                    font.family: root.uiFont; font.pixelSize: 8
+                                    color: modelData.connected ? root.c.green : root.dimColor
+                                }
+                                MouseArea {
+                                    id: btMouse; anchors.fill: parent; hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.connectBt(modelData.mac, modelData.connected)
+                                }
+                            }
+                        }
+                        Row {
+                            width: parent.width; spacing: 8
+                            Text {
+                                text: "SCAN"; font.family: root.uiFont; font.pixelSize: 9; color: root.accent
+                                MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.scanBt() }
+                            }
+                            Item { width: parent.width - 88; height: 1 }
+                            Text {
+                                text: root.btPanelStatus
+                                font.family: root.uiFont; font.pixelSize: 8; color: root.dimColor
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+                }
+
+                // Battery.
+                Rectangle {
+                    id: batteryCard
+                    visible: root.menuKind === "battery"
+                    width: 300
+                    height: batteryCol.implicitHeight + 24
+                    x: Math.max(8, modelData.width - width - 10)
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: batteryCol
+                        anchors.fill: parent; anchors.margins: 12; spacing: 7
+                        Row {
+                            width: parent.width
+                            Text { text: "BATTERY"; font.family: root.uiFont; font.pixelSize: 10; font.letterSpacing: 1.3; color: root.dimColor }
+                            Item { width: parent.width - 100; height: 1 }
+                            Text {
+                                text: root.batteryInfo.state || (root.batPct < 0 ? "AC" : "")
+                                font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor
+                            }
+                        }
+                        Row {
+                            width: parent.width; spacing: 10
+                            Text {
+                                text: root.batPct < 0 ? "󰂄" : (root.batPct > 80 ? "󰁹" : root.batPct > 40 ? "󰁾" : "󰁻")
+                                font.family: root.iconFont; font.pixelSize: 34; color: root.textColor
+                            }
+                            Column {
+                                anchors.verticalCenter: parent.verticalCenter
+                                Text {
+                                    text: root.batPct < 0 ? "AC POWER" : root.batPct + "%"
+                                    font.family: root.uiFont; font.pixelSize: 22; font.weight: Font.DemiBold; color: root.textColor
+                                }
+                                Text {
+                                    text: root.batteryInfo.state === "Charging" ? "Charging"
+                                        : root.batteryInfo.state === "Full" ? "Fully charged"
+                                        : root.batteryInfo.state === "Not charging" ? "Connected, not charging"
+                                        : (root.batPct < 0 ? "Power adapter connected" : "On battery")
+                                    font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor
+                                }
+                            }
+                        }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        Row {
+                            width: parent.width
+                            Text { text: "POWER DRAW"; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
+                            Item { width: parent.width - 150; height: 1 }
+                            Text { text: root.batteryInfo.watts !== undefined ? root.batteryInfo.watts + " W" : "—"; font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        }
+                        Row {
+                            width: parent.width
+                            Text { text: "HEALTH"; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
+                            Item { width: parent.width - 150; height: 1 }
+                            Text { text: root.batteryInfo.health !== undefined ? root.batteryInfo.health + "%" : "—"; font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        }
+                        Row {
+                            width: parent.width
+                            Text { text: "CYCLES"; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
+                            Item { width: parent.width - 150; height: 1 }
+                            Text { text: root.batteryInfo.cycles !== undefined && root.batteryInfo.cycles !== "-1" ? root.batteryInfo.cycles : "—"; font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        Text {
+                            text: "POWER SETTINGS"
+                            font.family: root.uiFont; font.pixelSize: 9; color: root.accent
+                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.run("settings") }
+                        }
+                    }
+                }
+
+                // Compact Settings panel.
+                Rectangle {
+                    id: settingsCard
+                    visible: root.menuKind === "settings"
+                    width: 280
+                    height: settingsCol.implicitHeight + 24
+                    x: root.menuAlignRight
+                        ? Math.max(8, modelData.width - width - 10)
+                        : Math.max(8, Math.min(root.menuAnchorX - width / 2, modelData.width - width - 8))
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: settingsCol
+                        anchors.fill: parent; anchors.margins: 12; spacing: 4
+                        Text { text: "SETTINGS"; font.family: root.uiFont; font.pixelSize: 10; font.letterSpacing: 1.3; color: root.dimColor }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+
+                        Item {
+                            width: parent.width; height: 32
+                            Rectangle { anchors.fill: parent; radius: 5; color: settingsWifi.containsMouse ? root.hoverColor : "transparent" }
+                            Text { anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "Wi-Fi"; font.family: root.uiFont; font.pixelSize: 11; color: root.textColor }
+                            Text { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: root.wifiOn ? "On" : "Off"; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
+                            MouseArea { id: settingsWifi; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.openMenu("wifi", root.menuAnchorX, root.menuScreen, true) }
+                        }
+                        Item {
+                            width: parent.width; height: 32
+                            Rectangle { anchors.fill: parent; radius: 5; color: settingsBt.containsMouse ? root.hoverColor : "transparent" }
+                            Text { anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "Bluetooth"; font.family: root.uiFont; font.pixelSize: 11; color: root.textColor }
+                            Text { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: root.btOn ? "On" : "Off"; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
+                            MouseArea { id: settingsBt; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.openMenu("bluetooth", root.menuAnchorX, root.menuScreen, true) }
+                        }
+                        Item {
+                            width: parent.width; height: 32
+                            Rectangle { anchors.fill: parent; radius: 5; color: settingsControl.containsMouse ? root.hoverColor : "transparent" }
+                            Text { anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "Display & Sound"; font.family: root.uiFont; font.pixelSize: 11; color: root.textColor }
+                            Text { anchors.right: parent.right; anchors.rightMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "›"; font.family: root.uiFont; font.pixelSize: 13; color: root.dimColor }
+                            MouseArea { id: settingsControl; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.openMenu("control", root.menuAnchorX, root.menuScreen, true) }
+                        }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        Item {
+                            width: parent.width; height: 30
+                            Text { anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter; text: "Open all settings…"; font.family: root.uiFont; font.pixelSize: 9; color: root.accent }
+                            MouseArea {
+                                anchors.fill: parent; cursorShape: Qt.PointingHandCursor
+                                onClicked: { root.closeMenu(); root.exec("~/.config/hypr/scripts/qs_manager.sh toggle settings"); }
+                            }
+                        }
+                    }
+                }
+
+                // About This Mac.
+                Rectangle {
+                    id: aboutCard
+                    visible: root.menuKind === "about"
+                    width: 370
+                    height: aboutCol.implicitHeight + 24
+                    x: root.menuAlignRight
+                        ? Math.max(8, modelData.width - width - 10)
+                        : Math.max(8, Math.min(root.menuAnchorX - width / 2, modelData.width - width - 8))
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: aboutCol
+                        anchors.fill: parent; anchors.margins: 14; spacing: 8
+                        Text { text: "X LINUX"; font.family: root.uiFont; font.pixelSize: 20; font.weight: Font.DemiBold; color: root.textColor }
+                        Text { text: root.aboutInfo.os || "X Linux"; font.family: root.uiFont; font.pixelSize: 10; color: root.dimColor }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        Text { text: "HOST  ·  " + (root.aboutInfo.host || "—"); font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        Text { text: "KERNEL  ·  " + (root.aboutInfo.kernel || "—"); font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        Text { text: "CPU  ·  " + (root.aboutInfo.cpu || "—"); font.family: root.uiFont; font.pixelSize: 10; color: root.textColor; wrapMode: Text.Wrap; width: parent.width }
+                        Text { text: "MEMORY  ·  " + (root.aboutInfo.mem || "—"); font.family: root.uiFont; font.pixelSize: 10; color: root.textColor }
+                        Text { text: "GPU  ·  " + (root.aboutInfo.gpu || "—"); font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor; wrapMode: Text.Wrap; width: parent.width }
+                    }
+                }
+
+                // Recent Items.
+                Rectangle {
+                    id: recentCard
+                    visible: root.menuKind === "recent"
+                    width: 350
+                    height: recentCol.implicitHeight + 24
+                    x: root.menuAlignRight
+                        ? Math.max(8, modelData.width - width - 10)
+                        : Math.max(8, Math.min(root.menuAnchorX - width / 2, modelData.width - width - 8))
+                    y: root.barH + 2
+                    color: root.menuColor
+                    border.width: 1; border.color: root.menuBorder
+                    radius: 14
+                    opacity: visible ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
+                    MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onClicked: {} }
+
+                    Column {
+                        id: recentCol
+                        anchors.fill: parent; anchors.margins: 12; spacing: 5
+                        Text { text: "RECENT ITEMS"; font.family: root.uiFont; font.pixelSize: 10; font.letterSpacing: 1.3; color: root.dimColor }
+                        Rectangle { width: parent.width; height: 1; color: Qt.rgba(1,1,1,0.12) }
+                        ListView {
+                            width: parent.width; height: 210; clip: true
+                            model: root.recentFiles
+                            delegate: Item {
+                                required property var modelData
+                                width: parent.width; height: 28
+                                Rectangle { anchors.fill: parent; radius: 5; color: recentMouse.containsMouse ? root.hoverColor : "transparent" }
+                                Text {
+                                    anchors.left: parent.left; anchors.leftMargin: 8; anchors.verticalCenter: parent.verticalCenter
+                                    width: parent.width - 16; text: modelData.name; elide: Text.ElideRight
+                                    font.family: root.uiFont; font.pixelSize: 11; color: root.textColor
+                                }
+                                MouseArea {
+                                    id: recentMouse; anchors.fill: parent; hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: root.openPath(modelData.path)
+                                }
+                            }
+                        }
+                        Text { text: root.recentStatus; font.family: root.uiFont; font.pixelSize: 9; color: root.dimColor }
                     }
                 }
 
