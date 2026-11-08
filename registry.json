@@ -2,6 +2,14 @@
   "version": 1,
   "plugins": [
     {
+      "id": "w11",
+      "name": "W11",
+      "author": "xscriptor",
+      "description": "Independent Windows 11-inspired taskbar with start menu, app search, weather, clock and power controls",
+      "source": "equisdots/plugins",
+      "path": "plugins/w11"
+    },
+    {
       "id": "nyx",
       "name": "Nyx",
       "author": "xscriptor",

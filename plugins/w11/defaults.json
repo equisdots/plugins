@@ -1,0 +1,36 @@
+{
+  "w11": {
+    "layoutMode": "full",
+    "themeMode": "windows11",
+    "iconPalette": false,
+    "barHeight": 48,
+    "opacity": 0.92,
+    "showSearch": true,
+    "showWeather": true,
+    "showBattery": true,
+    "showUser": true,
+    "showClock": true,
+    "apps": [
+      {
+        "label": "Terminal",
+        "glyph": "󰆍",
+        "exec": "kitty"
+      },
+      {
+        "label": "Files",
+        "glyph": "󰉋",
+        "exec": "nautilus"
+      },
+      {
+        "label": "Browser",
+        "glyph": "󰖟",
+        "exec": "brave"
+      },
+      {
+        "label": "Code",
+        "glyph": "󰅩",
+        "exec": "code"
+      }
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "w11",
+  "name": "W11",
+  "version": "0.1.0",
+  "author": "xscriptor",
+  "description": "Independent Windows 11-inspired taskbar with start menu, app search, weather, clock and power controls",
+  "type": "shell",
+  "compat": { "shell": ">=0.1.0" },
+  "scope": "w11",
+  "defaults": "defaults.json",
+  "defaultEnabled": false,
+  "settings": { "page": "settings/W11Page.qml", "label": "W11", "icon": "" },
+  "host": "host/W11Taskbar.qml",
+  "api": { "requires": ["colors", "settings", "exec", "paths", "log"] }
+}
