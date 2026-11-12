@@ -186,7 +186,7 @@ if [ -f "$CACHE_DIR/rec_pid" ]; then
     # 4. SEND FINAL NOTIFICATION
     if [ -f "$FINAL_FILE" ]; then
         (
-            ACTION=$(notify-send -a "Screen Recorder" -i "$FINAL_FILE" -A "default=Open Folder" "Recording saved" "File: $(basename "$FINAL_FILE")\nFolder: $RECORD_DIR")
+            ACTION=$(notify-send -a "Screen Recorder" -i "$FINAL_FILE" -t 8000 -A "default=Open Folder" "Recording saved" "File: $(basename "$FINAL_FILE")\nFolder: $RECORD_DIR")
             if [ "$ACTION" = "default" ]; then
                 if command -v nautilus &> /dev/null; then
                     nautilus "$RECORD_DIR"
@@ -196,7 +196,7 @@ if [ -f "$CACHE_DIR/rec_pid" ]; then
             fi
         ) &
     else
-        notify-send -a "Screen Recorder" "Error" "Failed to save the video file."
+        notify-send -a "Screen Recorder" -t 6000 "Error" "Failed to save the video file."
     fi
 
     # 5. INSTANT UI CLEANUP
@@ -295,7 +295,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
         echo "$REC_PID" > "$CACHE_DIR/rec_pid"
         echo "$VID_FILENAME" > "$CACHE_DIR/final_file"
 
-        notify-send -a "Screen Recorder" "Recording started" "Press your screenshot shortcut again to stop."
+        notify-send -a "Screen Recorder" -t 6000 "Recording started" "Press your screenshot shortcut again to stop."
         exit 0
     fi
 
@@ -311,7 +311,7 @@ if [ "$FULL_MODE" = true ] || [ -n "$GEOMETRY" ]; then
 
     if [ -s "$FILENAME" ]; then
         (
-            ACTION=$(notify-send -a "Screenshot" -i "$FILENAME" -A "default=Open Folder" "Screenshot Saved" "File: Screenshot_$time.png\nFolder: $SAVE_DIR")
+            ACTION=$(notify-send -a "Screenshot" -i "$FILENAME" -t 8000 -A "default=Open Folder" "Screenshot Saved" "File: Screenshot_$time.png\nFolder: $SAVE_DIR")
             if [ "$ACTION" = "default" ]; then
                 if command -v nautilus &> /dev/null; then
                     nautilus "$SAVE_DIR"
