@@ -550,6 +550,14 @@
       "description": "macOS-inspired desktop widgets: analog clock, weather, calendar, battery and music",
       "source": "equisdots/plugins",
       "path": "plugins/mos-widgets"
+    },
+    {
+      "id": "music-sumi",
+      "name": "Samurai Music",
+      "author": "xscriptor",
+      "description": "Sumi-e ink music widget: open enso cover, brush progress, seal controls and a compact 10-band ink EQ",
+      "source": "equisdots/plugins",
+      "path": "plugins/music-sumi"
     }
   ]
 }
