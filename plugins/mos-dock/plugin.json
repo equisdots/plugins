@@ -1,9 +1,9 @@
 {
   "id": "mos-dock",
   "name": "mos Dock",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "xscriptor",
-  "description": "A customizable macOS-style bottom dock with editable app launchers, magnification and translucent glass geometry",
+  "description": "A macOS Golden Gate-inspired Liquid Glass dock with real app icons, neighbour magnification, hover labels, running dots, launch bounce, separator and Downloads/Trash",
   "type": "shell",
   "compat": { "shell": ">=0.1.0" },
   "toggle": "mos-dock.enabled",

@@ -6,13 +6,18 @@
     "magnify": true,
     "magnifyScale": 1.22,
     "showLabels": false,
+    "glass": true,
+    "showIndicators": true,
+    "bounce": true,
+    "showDownloads": true,
+    "showTrash": true,
     "apps": [
-      { "label": "FINDER", "glyph": "󰉋", "exec": "nautilus" },
-      { "label": "SAFARI", "glyph": "󰖟", "exec": "brave" },
-      { "label": "MAIL", "glyph": "󰇮", "exec": "thunderbird" },
-      { "label": "MUSIC", "glyph": "󰝚", "exec": "spotify" },
-      { "label": "TERMINAL", "glyph": "󰆍", "exec": "kitty" },
-      { "label": "SETTINGS", "glyph": "󰒓", "exec": "~/.config/hypr/scripts/qs_manager.sh toggle settings" }
+      { "label": "Finder", "icon": "org.gnome.Nautilus", "glyph": "󰉋", "exec": "nautilus", "match": ["nautilus", "org.gnome.Nautilus"] },
+      { "label": "Safari", "icon": "brave-browser", "glyph": "󰖟", "exec": "brave", "match": ["brave", "brave-browser"] },
+      { "label": "Mail", "icon": "thunderbird", "glyph": "󰇮", "exec": "thunderbird", "match": ["thunderbird"] },
+      { "label": "Music", "icon": "spotify", "glyph": "󰝚", "exec": "spotify", "match": ["spotify"] },
+      { "label": "Terminal", "icon": "kitty", "glyph": "󰆍", "exec": "kitty", "match": ["kitty"] },
+      { "label": "Settings", "icon": "preferences-system", "glyph": "󰒓", "exec": "~/.config/hypr/scripts/qs_manager.sh toggle settings", "match": [] }
     ]
   }
 }

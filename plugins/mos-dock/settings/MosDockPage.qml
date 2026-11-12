@@ -12,12 +12,12 @@ Item {
     property var host: null
 
     readonly property var defaultApps: ([
-        { label: "FINDER", glyph: "󰉋", exec: "nautilus" },
-        { label: "SAFARI", glyph: "󰖟", exec: "brave" },
-        { label: "MAIL", glyph: "󰇮", exec: "thunderbird" },
-        { label: "MUSIC", glyph: "󰝚", exec: "spotify" },
-        { label: "TERMINAL", glyph: "󰆍", exec: "kitty" },
-        { label: "SETTINGS", glyph: "󰒓", exec: "~/.config/hypr/scripts/qs_manager.sh toggle settings" }
+        { label: "Finder", icon: "org.gnome.Nautilus", glyph: "󰉋", exec: "nautilus", match: ["nautilus", "org.gnome.Nautilus"] },
+        { label: "Safari", icon: "brave-browser", glyph: "󰖟", exec: "brave", match: ["brave", "brave-browser"] },
+        { label: "Mail", icon: "thunderbird", glyph: "󰇮", exec: "thunderbird", match: ["thunderbird"] },
+        { label: "Music", icon: "spotify", glyph: "󰝚", exec: "spotify", match: ["spotify"] },
+        { label: "Terminal", icon: "kitty", glyph: "󰆍", exec: "kitty", match: ["kitty"] },
+        { label: "Settings", icon: "preferences-system", glyph: "󰒓", exec: "~/.config/hypr/scripts/qs_manager.sh toggle settings", match: [] }
     ])
 
     readonly property var cfg: {
@@ -43,10 +43,15 @@ Item {
     }
 
     function cleanApp(a) {
+        let match = (a && a.match);
+        if (typeof match === "string") match = [match];
+        else if (!Array.isArray(match)) match = [];
         return {
             label: String((a && a.label) || ""),
+            icon: String((a && a.icon) || ""),
             glyph: String((a && a.glyph) || "󰀻"),
-            exec: String((a && a.exec) || "")
+            exec: String((a && a.exec) || ""),
+            match: match.map(String)
         };
     }
 
@@ -92,6 +97,7 @@ Item {
     }
 
     property string newLabel: ""
+    property string newIcon: ""
     property string newGlyph: "󰀻"
     property string newExec: ""
 
@@ -100,12 +106,15 @@ Item {
         if (cmd === "") return;
         let list = root.dApps.slice();
         list.push({
-            label: root.newLabel.trim() !== "" ? root.newLabel.trim() : cmd.split("/").pop().split(" ")[0].toUpperCase(),
+            label: root.newLabel.trim() !== "" ? root.newLabel.trim() : cmd.split("/").pop().split(" ")[0],
+            icon: root.newIcon.trim(),
             glyph: root.newGlyph.trim() !== "" ? root.newGlyph.trim() : "󰀻",
-            exec: cmd
+            exec: cmd,
+            match: []
         });
         root.persistApps(list);
         root.newLabel = "";
+        root.newIcon = "";
         root.newGlyph = "󰀻";
         root.newExec = "";
     }
@@ -237,6 +246,16 @@ Item {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 6
+                Text { width: 54; text: "ICON"; font.family: "Hack Nerd Font"; font.pixelSize: 9; color: Theme.subtext0 }
+                AppField {
+                    text: card.app.icon || ""
+                    labelText: "System icon name or absolute path (empty = glyph)"
+                    onEditingFinished: root.updateApp(card.appIndex, "icon", text)
+                }
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 6
                 Text { width: 54; text: "LABEL"; font.family: "Hack Nerd Font"; font.pixelSize: 9; color: Theme.subtext0 }
                 AppField {
                     text: card.app.label || ""
@@ -278,7 +297,7 @@ Item {
             }
             Text {
                 Layout.fillWidth: true; wrapMode: Text.WordWrap
-                text: "Independent macOS-style bottom dock. The launcher list below is live: label, Nerd Font glyph and the command opened by each icon."
+                text: "Independent macOS Golden Gate-style bottom dock: Liquid Glass capsule, real app icons, magnification, hover labels, running dots, separator and Downloads/Trash. Each launcher can use a system icon name (or absolute path); an empty icon falls back to its Nerd Font glyph."
                 font.family: "Hack Nerd Font"; font.pixelSize: 11; color: Theme.subtext0
             }
 
@@ -305,6 +324,26 @@ Item {
             ToggleRow {
                 label: "Show app labels"; checked: root.cfg.showLabels === true
                 onToggled: (v) => root.set("showLabels", v)
+            }
+            ToggleRow {
+                label: "Liquid Glass"; checked: root.cfg.glass !== false
+                onToggled: (v) => root.set("glass", v)
+            }
+            ToggleRow {
+                label: "Running-app dots"; checked: root.cfg.showIndicators !== false
+                onToggled: (v) => root.set("showIndicators", v)
+            }
+            ToggleRow {
+                label: "Bounce on launch"; checked: root.cfg.bounce !== false
+                onToggled: (v) => root.set("bounce", v)
+            }
+            ToggleRow {
+                label: "Show Downloads"; checked: root.cfg.showDownloads !== false
+                onToggled: (v) => root.set("showDownloads", v)
+            }
+            ToggleRow {
+                label: "Show Trash"; checked: root.cfg.showTrash !== false
+                onToggled: (v) => root.set("showTrash", v)
             }
 
             Rectangle {
@@ -342,6 +381,7 @@ Item {
                     RowLayout {
                         Layout.fillWidth: true; spacing: 6
                         AppField { Layout.preferredWidth: 72; Layout.fillWidth: false; text: root.newGlyph; labelText: "Glyph"; onTextEdited: root.newGlyph = text }
+                        AppField { Layout.fillWidth: true; text: root.newIcon; labelText: "Icon name or /path"; onTextEdited: root.newIcon = text }
                         AppField { Layout.fillWidth: true; text: root.newLabel; labelText: "Label"; onTextEdited: root.newLabel = text }
                     }
                     RowLayout {
