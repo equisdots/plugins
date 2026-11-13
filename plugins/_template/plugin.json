@@ -3,6 +3,7 @@
   "name": "My Plugin",
   "version": "0.1.0",
   "author": "your-name",
+  "license": "Apache-2.0",
   "description": "One line shown on the plugin card",
   "type": "hypr",
   "compat": { "hyprland": ">=0.55" }

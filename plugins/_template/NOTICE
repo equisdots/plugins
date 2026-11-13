@@ -1,0 +1,11 @@
+equisdots/plugins/_template
+Copyright (C) 2026 xscriptor <x@xscriptor.com>
+SPDX-License-Identifier: Apache-2.0
+
+This scaffold is licensed under the Apache License, Version 2.0. See LICENSE.
+
+When you copy it to `~/.config/hypr/plugins-user/<id>/` you may keep Apache-2.0
+or replace this license with your own; user plugins are separate works and may
+keep their own license/attribution. The `plugins` hub and its bundled plugins
+are AGPL-3.0-or-later. Plugins loaded by the shell are covered by the shell's
+plugin exception (equisdots/shell/PLUGIN-EXCEPTION.md).
