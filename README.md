@@ -43,4 +43,14 @@ contracts, the acceptance criteria and the open questions.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+AGPL-3.0-or-later — see [LICENSE](LICENSE). Copyright (C) 2026 xscriptor <x@xscriptor.com>.
+
+This repository is licensed under the GNU Affero General Public License, version 3 or any later version. If you modify the software and let users interact with it over a network, you must offer them the corresponding source.
+
+Releases published before 2026-11-13 were distributed under the MIT License and remain available under those terms.
+
+Third-party components, fonts, icons, images, sounds, vendored code and other assets keep their original licenses and are not covered by this license. See THIRD-PARTY.md / CREDITS.md where present.
+
+Bundled third-party plugins may keep their own license and attribution; the
+`_template/` scaffold is Apache-2.0 for user-created plugins. See
+[PLUGIN-LICENSING.md](PLUGIN-LICENSING.md).
